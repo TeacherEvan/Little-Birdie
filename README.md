@@ -1,4 +1,4 @@
-# Little-Birdie
+# Mathilda
 
 C# Blazor WebAssembly rebuild of the Flutter "Quicky" Thailand-travel utility.
 
@@ -8,7 +8,7 @@ C# Blazor WebAssembly rebuild of the Flutter "Quicky" Thailand-travel utility.
 
 ## Run locally
 ```
-dotnet run --project src/LittleBirdie/LittleBirdie.csproj
+dotnet run --project src/Mathilda/Mathilda.csproj
 ```
 
 ## Deploy

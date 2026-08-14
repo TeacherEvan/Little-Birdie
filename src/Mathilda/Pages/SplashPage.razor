@@ -1,0 +1,13 @@
+@page "/splash"
+@inject NavigationManager Nav
+
+<h1>Mathilda</h1>
+<p>Loading your travel companion...</p>
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        await Task.Delay(1200);
+        Nav.NavigateTo("/");
+    }
+}

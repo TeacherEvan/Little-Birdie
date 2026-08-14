@@ -1,10 +1,10 @@
-# Little-Birdie — C# Rebuild of Quicky (Vercel + Convex) Implementation Plan
+# Mathilda — C# Rebuild of Quicky (Vercel + Convex) Implementation Plan
 
 > **For Hermes:** Use subagent-driven-development skill to implement this plan task-by-task.
 
 **Goal:** Rebuild the Quicky Thailand-travel utility as a C# Blazor WebAssembly app deployable to Vercel, backed by a Convex data layer (C# → Convex HTTP REST API, since Convex has no C# SDK).
 
-**Architecture:** Static Blazor WebAssembly front-end (pure C#, compiled to WASM, served as static files by Vercel — Vercel cannot run .NET servers). A thin C# `ConvexClient` service calls the Convex HTTP API (`/api/...` + REST mutation/query endpoints) for any server-persisted data. Quicky is currently client-only with MOCK services; Little-Birdie preserves the feature set and migrates the mock-able data (saved places, trip cost entries, user settings) into Convex documents. Device capabilities map to web APIs: Geolocation API (GPS), `navigator.mediaDevices` (camera), `window.open` (URL launch). `installed_apps`/secure-storage have no browser equivalent → degrade gracefully.
+**Architecture:** Static Blazor WebAssembly front-end (pure C#, compiled to WASM, served as static files by Vercel — Vercel cannot run .NET servers). A thin C# `ConvexClient` service calls the Convex HTTP API (`/api/...` + REST mutation/query endpoints) for any server-persisted data. Quicky is currently client-only with MOCK services; Mathilda preserves the feature set and migrates the mock-able data (saved places, trip cost entries, user settings) into Convex documents. Device capabilities map to web APIs: Geolocation API (GPS), `navigator.mediaDevices` (camera), `window.open` (URL launch). `installed_apps`/secure-storage have no browser equivalent → degrade gracefully.
 
 **Tech Stack:**
 - .NET 8 SDK, Blazor WebAssembly (C#)
@@ -18,13 +18,13 @@
 
 ## Phase 0 — Repository scaffold
 
-### Task 0.1: Clone Little-Birdie and create solution
+### Task 0.1: Clone Mathilda and create solution
 **Objective:** Establish the repo working tree and a .NET solution.
-**Files:** Create `/home/android/Little-Birdie/Little-Birdie.sln`; dirs `src/LittleBirdie`, `tests/LittleBirdie.Tests`, `convex/`, `docs/`.
+**Files:** Create `/home/android/Mathilda/Mathilda.sln`; dirs `src/Mathilda`, `tests/Mathilda.Tests`, `convex/`, `docs/`.
 **Step 1:** Clone the reserved repo.
 ```
-cd /home/android && git clone https://github.com/TeacherEvan/Little-Birdie.git && cd Little-Birdie
-mkdir -p src/LittleBirdie tests/LittleBirdie.Tests convex docs
+cd /home/android && git clone https://github.com/TeacherEvan/Mathilda.git && cd Mathilda
+mkdir -p src/Mathilda tests/Mathilda.Tests convex docs
 ```
 **Step 2:** Verify dotnet present.
 ```
@@ -32,13 +32,13 @@ dotnet --version   # expect 8.0.x
 ```
 **Step 3:** Commit scaffold.
 ```
-git add -A && git commit -m "chore: scaffold Little-Birdie repo"
+git add -A && git commit -m "chore: scaffold Mathilda repo"
 ```
 
 ### Task 0.2: Create Blazor WebAssembly project
 **Objective:** Stand up the WASM app project.
-**Files:** Create `src/LittleBirdie/LittleBirdie.csproj`.
-**Step 1:** Write `LittleBirdie.csproj`:
+**Files:** Create `src/Mathilda/Mathilda.csproj`.
+**Step 1:** Write `Mathilda.csproj`:
 ```xml
 <Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
   <PropertyGroup>
@@ -52,12 +52,12 @@ git add -A && git commit -m "chore: scaffold Little-Birdie repo"
   </ItemGroup>
 </Project>
 ```
-**Step 2:** `dotnet build src/LittleBirdie/LittleBirdie.csproj` → expect Build succeeded.
+**Step 2:** `dotnet build src/Mathilda/Mathilda.csproj` → expect Build succeeded.
 **Step 3:** Commit.
 
 ### Task 0.3: Add xUnit + bunit test project
 **Objective:** Enable TDD for the rebuild.
-**Files:** Create `tests/LittleBirdie.Tests/LittleBirdie.Tests.csproj`.
+**Files:** Create `tests/Mathilda.Tests/Mathilda.Tests.csproj`.
 **Step 1:** Write csproj:
 ```xml
 <Project Sdk="Microsoft.NET.Sdk.Razor">
@@ -73,11 +73,11 @@ git add -A && git commit -m "chore: scaffold Little-Birdie repo"
     <PackageReference Include="coverlet.collector" Version="6.0.0" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\LittleBirdie\LittleBirdie.csproj" />
+    <ProjectReference Include="..\..\src\Mathilda\Mathilda.csproj" />
   </ItemGroup>
 </Project>
 ```
-**Step 2:** `dotnet test tests/LittleBirdie.Tests` → expect 0 tests, Build succeeded.
+**Step 2:** `dotnet test tests/Mathilda.Tests` → expect 0 tests, Build succeeded.
 **Step 3:** Commit.
 
 ---
@@ -86,7 +86,7 @@ git add -A && git commit -m "chore: scaffold Little-Birdie repo"
 
 ### Task 1.1: Attraction model
 **Objective:** Port `Attraction` (name, distanceKm, type, openNow).
-**Files:** Create `src/LittleBirdie/Models/Attraction.cs`; Test `tests/LittleBirdie.Tests/Models/AttractionTests.cs`.
+**Files:** Create `src/Mathilda/Models/Attraction.cs`; Test `tests/Mathilda.Tests/Models/AttractionTests.cs`.
 **Step 1 (failing test):**
 ```csharp
 using Xunit;
@@ -104,14 +104,14 @@ public class AttractionTests {
 **Step 2:** `dotnet test` → FAIL (type missing).
 **Step 3 (impl):**
 ```csharp
-namespace LittleBirdie.Models;
+namespace Mathilda.Models;
 public record Attraction(string Name, double DistanceKm, string Type, bool OpenNow);
 ```
 **Step 4:** `dotnet test` → PASS. Commit `feat: add Attraction model`.
 
 ### Task 1.2: WeatherSnapshot model
 **Objective:** Port `WeatherSnapshot` (tempC, condition, forecast[]).
-**Files:** Create `src/LittleBirdie/Models/WeatherSnapshot.cs`; test `WeatherSnapshotTests.cs`.
+**Files:** Create `src/Mathilda/Models/WeatherSnapshot.cs`; test `WeatherSnapshotTests.cs`.
 **Step 1 (test):** assert record holds tempC=31, condition="Sunny", forecast=["32°","30°","29°"].
 **Step 2:** `dotnet test` → FAIL.
 **Step 3 (impl):** `public record WeatherSnapshot(double TempC, string Condition, string[] Forecast);`
@@ -119,7 +119,7 @@ public record Attraction(string Name, double DistanceKm, string Type, bool OpenN
 
 ### Task 1.3: TripCostEntry + CostResult models
 **Objective:** Port cost calculator domain (amount, currency, category, converted total).
-**Files:** Create `src/LittleBirdie/Models/TripCostEntry.cs`, `CostResult.cs`; tests.
+**Files:** Create `src/Mathilda/Models/TripCostEntry.cs`, `CostResult.cs`; tests.
 **Step 1 (test):** entry with amount=100, currency="THB", category="food" → CostResult.Total=100.
 **Step 2:** FAIL.
 **Step 3 (impl):** records with computed Total.
@@ -131,7 +131,7 @@ public record Attraction(string Name, double DistanceKm, string Type, bool OpenN
 
 ### Task 2.1: ConvexClient base (HTTP)
 **Objective:** Thin typed client over Convex HTTP API.
-**Files:** Create `src/LittleBirdie/Services/ConvexClient.cs`; test `ConvexClientTests.cs`.
+**Files:** Create `src/Mathilda/Services/ConvexClient.cs`; test `ConvexClientTests.cs`.
 **Context:** Convex HTTP API endpoints:
 - Query: `POST {DEPLOY_URL}/api/query` body `{ "path": "name", "args": {...}, "format": "json" }` → `{ "status": "success", "value": ... }`
 - Mutation: `POST {DEPLOY_URL}/api/mutation` same shape.
@@ -158,7 +158,7 @@ public record ConvexEnvelope<T>(string Status, T? Value);
 
 ### Task 2.2: PlacesService over Convex
 **Objective:** Replace mock `PlacesService` with Convex-backed equivalent.
-**Files:** Create `src/LittleBirdie/Services/PlacesService.cs`; test `PlacesServiceTests.cs`.
+**Files:** Create `src/Mathilda/Services/PlacesService.cs`; test `PlacesServiceTests.cs`.
 **Step 1 (test):** with injected ConvexClient returning mock list → `FetchNearby(5)` returns 3 items and maps distanceKm.
 **Step 2:** FAIL.
 **Step 3 (impl):** wraps `ConvexClient.QueryAsync<List<Attraction>>("places/list", new { radiusKm })`.
@@ -166,7 +166,7 @@ public record ConvexEnvelope<T>(string Status, T? Value);
 
 ### Task 2.3: WeatherService over Convex + fallback
 **Objective:** Convex weather with mock fallback when unconfigured (preserve Quicky behavior).
-**Files:** `src/LittleBirdie/Services/WeatherService.cs`; test.
+**Files:** `src/Mathilda/Services/WeatherService.cs`; test.
 **Step 1 (test):** no deploy URL → returns mock snapshot (tempC 31, "Sunny"). With client → returns API value.
 **Step 2:** FAIL. **Step 3 (impl):** if `_deployUrl` empty return mock; else query. **Step 4:** PASS. Commit.
 
@@ -183,14 +183,14 @@ public record ConvexEnvelope<T>(string Status, T? Value);
 
 ### Task 3.1: App shell + routing
 **Objective:** Port `main.dart` MaterialApp.router → Blazor `App.razor` + routes.
-**Files:** `src/LittleBirdie/App.razor`, `Routes.razor`, `MainLayout.razor`.
+**Files:** `src/Mathilda/App.razor`, `Routes.razor`, `MainLayout.razor`.
 **Step 1:** define routes: `/` (Dashboard), `/attractions`, `/weather`, `/cost`, `/banking`, `/bathroom`, `/bolt`, `/counter`, `/location`, `/settings`, `/splash`.
 **Step 2:** `dotnet build` → succeeded.
 **Step 3:** Commit.
 
 ### Task 3.2: Octagon dashboard layout
 **Objective:** Port `dashboard_layout.dart` / `octagon_tile.dart`.
-**Files:** `src/LittleBirdie/Components/OctagonDashboard.razor` (+ `.razor.css`), `OctagonTile.razor`.
+**Files:** `src/Mathilda/Components/OctagonDashboard.razor` (+ `.razor.css`), `OctagonTile.razor`.
 **Step 1 (bunit test):** renders 8 tiles with expected labels.
 **Step 2:** FAIL (no component). **Step 3 (impl):** CSS clip-path octagon grid of nav tiles. **Step 4:** PASS. Commit.
 
@@ -214,7 +214,7 @@ public record ConvexEnvelope<T>(string Status, T? Value);
 
 ### Task 3.6: Banking / Bathroom / Bolt / Counter / Location pages
 **Objective:** Port remaining simple pages (degrade device-only features).
-**Files:** one `.razor` per feature under `src/LittleBirdie/Components/Pages/`.
+**Files:** one `.razor` per feature under `src/Mathilda/Components/Pages/`.
 **Step 1:** each builds; `Location` uses `navigator.geolocation` via JSInterop; `Bathroom` lists mock nearest; `Bolt`/`Counter` are stateful UI.
 **Step 2:** `dotnet build` → succeeded. **Step 3:** Commit `feat: port remaining feature pages`.
 
@@ -240,7 +240,7 @@ public record ConvexEnvelope<T>(string Status, T? Value);
 **Step 1:** write `vercel.json`:
 ```json
 {
-  "buildCommand": "dotnet publish src/LittleBirdie/LittleBirdie.csproj -c Release -o publish",
+  "buildCommand": "dotnet publish src/Mathilda/Mathilda.csproj -c Release -o publish",
   "outputDirectory": "publish/wwwroot",
   "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
 }

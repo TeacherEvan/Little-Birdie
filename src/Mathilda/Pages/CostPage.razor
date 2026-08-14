@@ -1,0 +1,70 @@
+@page "/cost"
+@using Microsoft.AspNetCore.Components
+@using Mathilda.Models
+
+<h1>Trip Cost Tracker</h1>
+<p>Add your expenses below. Totals stay in this page (no backend required).</p>
+
+<EditForm Model="this" OnValidSubmit="AddEntry">
+    <div class="form-row">
+        <label>
+            Amount
+            <InputNumber @bind-Value="_amount" class="input" />
+        </label>
+        <label>
+            Currency
+            <InputText @bind-Value="_currency" class="input" />
+        </label>
+        <label>
+            Category
+            <InputText @bind-Value="_category" class="input" />
+        </label>
+        <button type="submit" class="btn">Add expense</button>
+    </div>
+</EditForm>
+
+@if (_entries.Count == 0)
+{
+    <p><em>No expenses added yet.</em></p>
+}
+else
+{
+    <table class="cost-table">
+        <thead>
+            <tr><th>Amount</th><th>Currency</th><th>Category</th></tr>
+        </thead>
+        <tbody>
+            @foreach (var e in _entries)
+            {
+                <tr>
+                    <td>@e.Amount.ToString("0.00")</td>
+                    <td>@e.Currency</td>
+                    <td>@e.Category</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <div class="card total-card">
+        <h3>Total</h3>
+        <p class="total">@_total.ToString("0.00")</p>
+        <p class="muted">@_entries.Count entr@(_entries.Count == 1 ? "y" : "ies")</p>
+    </div>
+}
+
+@code {
+    private List<TripCostEntry> _entries = new();
+    private double _amount;
+    private string _currency = "THB";
+    private string _category = "Food";
+    private double _total;
+
+    private void AddEntry()
+    {
+        _entries.Add(new TripCostEntry(_amount, _currency, _category));
+        _total = _entries.Sum(e => e.Total);
+        _amount = 0;
+        _currency = "THB";
+        _category = "Food";
+    }
+}
