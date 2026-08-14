@@ -1,0 +1,6 @@
+{
+  "buildCommand": "dotnet publish src/LittleBirdie/LittleBirdie.csproj -c Release -o publish",
+  "outputDirectory": "publish/wwwroot",
+  "framework": null,
+  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
+}
