@@ -1,0 +1,20 @@
+@page "/counter"
+@using Microsoft.AspNetCore.Components
+
+<h1>Counter</h1>
+<p>A simple local-state demo — increments and decrements stay in the page.</p>
+
+<div class="counter">
+    <button class="btn" @onclick="Decrement">−</button>
+    <span class="counter-value">@_count</span>
+    <button class="btn" @onclick="Increment">+</button>
+</div>
+
+<p class="muted">Current value: <strong>@_count</strong></p>
+
+@code {
+    private int _count = 0;
+
+    private void Increment() => _count++;
+    private void Decrement() => _count--;
+}

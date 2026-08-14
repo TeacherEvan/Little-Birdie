@@ -1,0 +1,43 @@
+@page "/weather"
+@using Microsoft.AspNetCore.Components
+@using LittleBirdie.Services
+@inject WeatherService Weather
+
+<h1>Weather</h1>
+<p>Current conditions for Bangkok (13.75, 100.5) — mock data until Convex is configured.</p>
+
+@if (_snapshot is null)
+{
+    <p><em>Loading weather…</em></p>
+}
+else
+{
+    <div class="card">
+        <h2>@_snapshot.TempC.ToString("0")°C</h2>
+        <p class="muted">@_snapshot.Condition</p>
+    </div>
+
+    <h3>Forecast</h3>
+    @if (_snapshot.Forecast.Length == 0)
+    {
+        <p>No forecast available.</p>
+    }
+    else
+    {
+        <div class="chip-row">
+            @foreach (var f in _snapshot.Forecast)
+            {
+                <span class="chip">@f</span>
+            }
+        </div>
+    }
+}
+
+@code {
+    private LittleBirdie.Models.WeatherSnapshot? _snapshot;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _snapshot = await Weather.Fetch(13.75, 100.5);
+    }
+}

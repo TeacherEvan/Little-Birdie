@@ -1,0 +1,21 @@
+@page "/location"
+@using Microsoft.AspNetCore.Components
+@inject NavigationManager Nav
+
+<h1>Location</h1>
+<p>Location services placeholder for the MVP (real geolocation API not wired up yet).</p>
+
+<div class="card">
+    <h3>Location services placeholder</h3>
+    <p>This page will eventually request the browser's geolocation and feed coordinates into the Weather and Attractions pages.</p>
+    <p class="muted">Base URI: @Nav.BaseUri</p>
+</div>
+
+<div class="card">
+    <h3>Planned behavior</h3>
+    <ul>
+        <li>Request <code>navigator.geolocation</code> permission on demand.</li>
+        <li>Map lat/lng to nearby attractions via <code>PlacesService</code>.</li>
+        <li>Show current conditions via <code>WeatherService</code>.</li>
+    </ul>
+</div>
