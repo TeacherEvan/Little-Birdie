@@ -10,7 +10,7 @@ public class OctagonDashboardTests : TestContext
     public void Renders_Title()
     {
         var cut = RenderComponent<OctagonDashboard>();
-        cut.Markup.Contains("Little-Birdie");
+        Assert.Contains("Little-Birdie", cut.Markup);
     }
 
     [Fact]
