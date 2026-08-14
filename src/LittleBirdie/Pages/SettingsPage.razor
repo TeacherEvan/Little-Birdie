@@ -3,7 +3,7 @@
 
 <h2>Settings</h2>
 
-<EditForm Model="@this">
+<EditForm Model="@this" OnValidSubmit="Save">
     <label>Language
         <select @bind="Language">
             <option value="en">English</option>
@@ -16,7 +16,7 @@
             <option value="dark">Dark</option>
         </select>
     </label>
-    <button type="submit" @onclick="Save">Save</button>
+    <button type="submit" class="btn">Save</button>
 </EditForm>
 
 <p>@status</p>

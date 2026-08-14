@@ -5,7 +5,7 @@
 <h1>Trip Cost Tracker</h1>
 <p>Add your expenses below. Totals stay in this page (no backend required).</p>
 
-<EditForm EditContext="_editContext" OnValidSubmit="AddEntry">
+<EditForm Model="this" OnValidSubmit="AddEntry">
     <div class="form-row">
         <label>
             Amount
@@ -57,13 +57,7 @@ else
     private double _amount;
     private string _currency = "THB";
     private string _category = "Food";
-    private Microsoft.AspNetCore.Components.Forms.EditContext _editContext = null!;
     private double _total;
-
-    protected override void OnInitialized()
-    {
-        _editContext = new Microsoft.AspNetCore.Components.Forms.EditContext(new object());
-    }
 
     private void AddEntry()
     {
