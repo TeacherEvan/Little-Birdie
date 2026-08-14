@@ -1,281 +1,217 @@
 # Mathilda — C# Rebuild of Quicky (Vercel + Convex) Implementation Plan
 
-> **For Hermes:** Use subagent-driven-development skill to implement this plan task-by-task.
+> **For Hermes:** Execute task-by-task via Hermes tooling. The previously-referenced
+> `subagent-driven-development` skill does NOT exist in this environment; the
+> `writing-plans-enhanced` skill mandates a `superpowers:executing-plans` pointer, but
+> that sub-skill is not loaded here either. Use `delegate_task` (one leaf subagent per
+> task, review between tasks) or direct tool calls. Reconcile every task against the live
+> tree before claiming completion (see "Current State Reconciliation").
 
-**Goal:** Rebuild the Quicky Thailand-travel utility as a C# Blazor WebAssembly app deployable to Vercel, backed by a Convex data layer (C# → Convex HTTP REST API, since Convex has no C# SDK).
+**Goal:** Rebuild the Quicky Thailand-travel utility as a C# Blazor WebAssembly app deployable to Vercel, backed by a Convex data layer reached from C# over the Convex HTTP REST API (no C# SDK exists).
 
-**Architecture:** Static Blazor WebAssembly front-end (pure C#, compiled to WASM, served as static files by Vercel — Vercel cannot run .NET servers). A thin C# `ConvexClient` service calls the Convex HTTP API (`/api/...` + REST mutation/query endpoints) for any server-persisted data. Quicky is currently client-only with MOCK services; Mathilda preserves the feature set and migrates the mock-able data (saved places, trip cost entries, user settings) into Convex documents. Device capabilities map to web APIs: Geolocation API (GPS), `navigator.mediaDevices` (camera), `window.open` (URL launch). `installed_apps`/secure-storage have no browser equivalent → degrade gracefully.
+**Architecture:** Static Blazor WebAssembly front-end (pure C#, compiled to WASM, served as static files by Vercel — Vercel cannot run .NET servers). A thin C# `ConvexClient` service calls the Convex HTTP API (`/api/query`, `/api/mutation`) for server-persisted data. Quicky is client-only with MOCK services; Mathilda preserves the feature set and migrates mock-able data (saved places, user settings) into Convex documents. Device capabilities map to web APIs: Geolocation API (GPS), `navigator.mediaDevices` (camera), `window.open` (URL launch). `installed_apps`/secure-storage have no browser equivalent → degrade gracefully.
 
 **Tech Stack:**
-- .NET 8 SDK, Blazor WebAssembly (C#)
+- .NET 8 SDK (project targets `net8.0`; CI pins `dotnet-version: '8.0.x'`, local SDK is 10.0.110 — both build net8.0 fine)
+- Blazor WebAssembly (`Microsoft.AspNetCore.Components.WebAssembly` 8.0.0)
 - `System.Net.Http.Json` for Convex HTTP calls
-- `IndexedDb`/`localStorage` (`Microsoft.AspNetCore.Components.WebAssembly` + JSInterop) for client cache
-- xUnit + `bunit` for unit/component tests (runs via `dotnet test`)
-- Vercel (static hosting, `vercel.json` + `wwwroot` publish output)
+- xUnit 2.6.6 + `bunit` 1.28.9 for unit/component tests (runs via `dotnet test`)
+- Vercel (static hosting; `vercel.json` + `publish/wwwroot` output)
 - Convex (HTTP API data layer; schema in `convex/`)
 
----
-
-## Phase 0 — Repository scaffold
-
-### Task 0.1: Clone Mathilda and create solution
-**Objective:** Establish the repo working tree and a .NET solution.
-**Files:** Create `/home/android/Mathilda/Mathilda.sln`; dirs `src/Mathilda`, `tests/Mathilda.Tests`, `convex/`, `docs/`.
-**Step 1:** Clone the reserved repo.
-```
-cd /home/android && git clone https://github.com/TeacherEvan/Mathilda.git && cd Mathilda
-mkdir -p src/Mathilda tests/Mathilda.Tests convex docs
-```
-**Step 2:** Verify dotnet present.
-```
-dotnet --version   # expect 8.0.x
-```
-**Step 3:** Commit scaffold.
-```
-git add -A && git commit -m "chore: scaffold Mathilda repo"
-```
-
-### Task 0.2: Create Blazor WebAssembly project
-**Objective:** Stand up the WASM app project.
-**Files:** Create `src/Mathilda/Mathilda.csproj`.
-**Step 1:** Write `Mathilda.csproj`:
-```xml
-<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
-  <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <Nullable>enable</Nullable>
-    <OutputType>Exe</OutputType>
-  </PropertyGroup>
-  <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="8.0.0" PrivateAssets="all" />
-  </ItemGroup>
-</Project>
-```
-**Step 2:** `dotnet build src/Mathilda/Mathilda.csproj` → expect Build succeeded.
-**Step 3:** Commit.
-
-### Task 0.3: Add xUnit + bunit test project
-**Objective:** Enable TDD for the rebuild.
-**Files:** Create `tests/Mathilda.Tests/Mathilda.Tests.csproj`.
-**Step 1:** Write csproj:
-```xml
-<Project Sdk="Microsoft.NET.Sdk.Razor">
-  <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <IsPackable>false</IsPackable>
-  </PropertyGroup>
-  <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
-    <PackageReference Include="xunit" Version="2.6.6" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="2.5.6" />
-    <PackageReference Include="bunit" Version="1.28.0" />
-    <PackageReference Include="coverlet.collector" Version="6.0.0" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\src\Mathilda\Mathilda.csproj" />
-  </ItemGroup>
-</Project>
-```
-**Step 2:** `dotnet test tests/Mathilda.Tests` → expect 0 tests, Build succeeded.
-**Step 3:** Commit.
+**Effort:** ~2 weeks (largely COMPLETE as of 2026-08-15; see reconciliation) | **Surfaces touched:** 1 (.NET solution: `src/Mathilda`, `tests/Mathilda`) | **New tables:** 2 (`places`, `settings` in `convex/schema.ts`) | **Feature flag:** none (single static deploy)
 
 ---
 
-## Phase 1 — Domain models (TDD)
+## Current State Reconciliation (ground truth from live tree + `dotnet test`)
 
-### Task 1.1: Attraction model
-**Objective:** Port `Attraction` (name, distanceKm, type, openNow).
-**Files:** Create `src/Mathilda/Models/Attraction.cs`; Test `tests/Mathilda.Tests/Models/AttractionTests.cs`.
-**Step 1 (failing test):**
-```csharp
-using Xunit;
-public class AttractionTests {
-    [Fact]
-    public void Ctor_SetsAllFields() {
-        var a = new Attraction("Cafe", 1.2, "cafe", true);
-        Assert.Equal("Cafe", a.Name);
-        Assert.Equal(1.2, a.DistanceKm);
-        Assert.Equal("cafe", a.Type);
-        Assert.True(a.OpenNow);
-    }
-}
-```
-**Step 2:** `dotnet test` → FAIL (type missing).
-**Step 3 (impl):**
-```csharp
-namespace Mathilda.Models;
-public record Attraction(string Name, double DistanceKm, string Type, bool OpenNow);
-```
-**Step 4:** `dotnet test` → PASS. Commit `feat: add Attraction model`.
+Verified against the working tree on `main` (commit `8456b8c`). 7/7 tests pass.
 
-### Task 1.2: WeatherSnapshot model
-**Objective:** Port `WeatherSnapshot` (tempC, condition, forecast[]).
-**Files:** Create `src/Mathilda/Models/WeatherSnapshot.cs`; test `WeatherSnapshotTests.cs`.
-**Step 1 (test):** assert record holds tempC=31, condition="Sunny", forecast=["32°","30°","29°"].
-**Step 2:** `dotnet test` → FAIL.
-**Step 3 (impl):** `public record WeatherSnapshot(double TempC, string Condition, string[] Forecast);`
-**Step 4:** PASS. Commit.
+**DONE (live, committed):**
+- Phase 0: Repo scaffold, `Mathilda.sln`, `src/Mathilda` + `tests/Mathilda/Mathilda.Tests.csproj` (+ `.sln`/dirs). Paths differ from the original plan's `/home/android` fiction — authoritative layout is below.
+- Phase 1: Models `Attraction`, `WeatherSnapshot`, `TripCostEntry`, `CostResult` + 3 model test files (all green).
+- Phase 2: `ConvexClient` (HTTP base), `PlacesService`, `WeatherService` + `PlacesServiceTests`, `WeatherServiceTests`. `convex/schema.ts`, `convex/places.ts`, `convex/settings.ts`, `convex/README.md`.
+- Phase 3: `App.razor` (Router inline, no `Routes.razor`), `MainLayout.razor`, and 14 razor files: `OctagonDashboard`, `SplashPage`, `AttractionsPage`, `WeatherPage`, `CostPage`, `BankingPage`, `BathroomPage`, `BoltPage`, `CounterPage`, `LocationPage`, `SettingsPage`. `OctagonDashboardTests` present (the 7th passing test).
+- Phase 4: `vercel.json` (output `publish/wwwroot`), `.vercelignore`, `convex/README.md`, root `README.md`, `.github/workflows/build.yml` (dotnet 8.0.x, restore/build/test).
 
-### Task 1.3: TripCostEntry + CostResult models
-**Objective:** Port cost calculator domain (amount, currency, category, converted total).
-**Files:** Create `src/Mathilda/Models/TripCostEntry.cs`, `CostResult.cs`; tests.
-**Step 1 (test):** entry with amount=100, currency="THB", category="food" → CostResult.Total=100.
-**Step 2:** FAIL.
-**Step 3 (impl):** records with computed Total.
-**Step 4:** PASS. Commit.
+**REMAINING / GAPS (open work):**
+- **G1 — `ConvexClientTests.cs` missing.** Plan Task 2.1 specifies a unit test for `ConvexClient.QueryAsync` via a mocked `HttpMessageHandler`; it was never written. 7 tests exist but none cover `ConvexClient`.
+- **G2 — i18n not implemented as specced.** Task 3.7 specified `Localization.resx` (en + th) + `AppTheme.cs` resource-manager switching. Actual `SettingsPage.razor` is a plain `<select @bind>` with no resource manager and no theme application beyond a string. Decide: implement resx i18n (Task 3.7 rework) OR revise the plan to drop i18n and document Settings as en/th-by-binding only.
+- **G3 — Component structure differs from plan.** Plan named separate `OctagonTile.razor`, `AttractionCard.razor`, `CostResultCard.razor`; actual code inlines these into `OctagonDashboard.razor`, `AttractionsPage.razor`, `CostPage.razor`. Functionally equivalent; update plan wording to match reality.
+- **G4 — `LocationPage` geolocation JSInterop unverified.** Plan Phase 3.6 says `Location` uses `navigator.geolocation` via JSInterop; confirm the interop exists and degrades when denied.
+- **G5 — Phase 5 final review incomplete:** `dotnet publish -c Release -o publish` not yet exercised to confirm `publish/wwwroot` is Vercel-ready; no `v0.1.0` tag.
 
 ---
 
-## Phase 2 — Convex data layer (C# → HTTP API)
+## Milestone Timeline
 
-### Task 2.1: ConvexClient base (HTTP)
-**Objective:** Thin typed client over Convex HTTP API.
-**Files:** Create `src/Mathilda/Services/ConvexClient.cs`; test `ConvexClientTests.cs`.
-**Context:** Convex HTTP API endpoints:
-- Query: `POST {DEPLOY_URL}/api/query` body `{ "path": "name", "args": {...}, "format": "json" }` → `{ "status": "success", "value": ... }`
-- Mutation: `POST {DEPLOY_URL}/api/mutation` same shape.
-Deploy URL from env `CONVEX_DEPLOYMENT` or config.
-**Step 1 (test):** mock HttpMessageHandler returns `{"status":"success","value":[{"name":"Mock Cafe"}]}`; `QueryAsync<List<Attraction>>("places/list", new {})` deserializes to 1 item.
-**Step 2:** FAIL.
-**Step 3 (impl):**
-```csharp
-public class ConvexClient {
-    private readonly HttpClient _http;
-    private readonly string _deployUrl;
-    public ConvexClient(HttpClient http, string deployUrl) { _http = http; _deployUrl = deployUrl; }
-    public async Task<T?> QueryAsync<T>(string path, object args) {
-        var body = new { path, args, format = "json" };
-        var resp = await _http.PostAsJsonAsync($"{_deployUrl}/api/query", body);
-        var raw = await resp.Content.ReadFromJsonAsync<ConvexEnvelope<T>>();
-        return raw?.Value;
-    }
-    // MutationAsync analogous
-}
-public record ConvexEnvelope<T>(string Status, T? Value);
+The rebuild is already past M1–M4. Remaining work is the gaps above plus final release.
+
+### Milestone 1: Scaffold + Domain (DONE)
+Solution, Blazor WASM project, xUnit/bunit, 4 domain models + tests.
+
+### Milestone 2: Convex Data Layer (DONE except G1)
+`ConvexClient` HTTP base, `PlacesService`, `WeatherService` (+ fallback), convex schema/functions. **Open: G1 (ConvexClient test).**
+
+### Milestone 3: UI Port (DONE except G2/G3)
+App shell, octagon dashboard, 8 feature pages, settings, splash. **Open: G2 (i18n), G3 (component naming), G4 (location interop).**
+
+### Milestone 4: Deploy Config (DONE)
+Vercel static config, Convex wiring docs, CI build+test.
+
+### Milestone 5: Hardening + Release (REMAINING)
+- Fix G1: add `ConvexClientTests.cs`.
+- Resolve G2: implement resx i18n OR formally descope.
+- Resolve G3/G4: align plan to actual components; verify location interop.
+- G5: `dotnet publish` smoke test + `v0.1.0` tag.
+
+---
+
+## Data Flow
+
+### Convex Query Path (C# → HTTP → Convex)
 ```
-**Step 4:** PASS. Commit `feat: ConvexClient HTTP base`.
-
-### Task 2.2: PlacesService over Convex
-**Objective:** Replace mock `PlacesService` with Convex-backed equivalent.
-**Files:** Create `src/Mathilda/Services/PlacesService.cs`; test `PlacesServiceTests.cs`.
-**Step 1 (test):** with injected ConvexClient returning mock list → `FetchNearby(5)` returns 3 items and maps distanceKm.
-**Step 2:** FAIL.
-**Step 3 (impl):** wraps `ConvexClient.QueryAsync<List<Attraction>>("places/list", new { radiusKm })`.
-**Step 4:** PASS. Commit.
-
-### Task 2.3: WeatherService over Convex + fallback
-**Objective:** Convex weather with mock fallback when unconfigured (preserve Quicky behavior).
-**Files:** `src/Mathilda/Services/WeatherService.cs`; test.
-**Step 1 (test):** no deploy URL → returns mock snapshot (tempC 31, "Sunny"). With client → returns API value.
-**Step 2:** FAIL. **Step 3 (impl):** if `_deployUrl` empty return mock; else query. **Step 4:** PASS. Commit.
-
-### Task 2.4: Convex schema (convex/)
-**Objective:** Define server schema for persisted data.
-**Files:** Create `convex/schema.ts`, `convex/places.ts`, `convex/settings.ts`.
-**Step 1:** write `schema.ts` with `places` (name, type, lat, lng, addedBy), `settings` (userId, lang, theme).
-**Step 2:** `convex/places.ts` exports `list`, `add` query/mutation returning JSON.
-**Step 3:** Commit `feat: convex schema + query/mutation functions`.
-
----
-
-## Phase 3 — UI (Blazor components, ported from Flutter)
-
-### Task 3.1: App shell + routing
-**Objective:** Port `main.dart` MaterialApp.router → Blazor `App.razor` + routes.
-**Files:** `src/Mathilda/App.razor`, `Routes.razor`, `MainLayout.razor`.
-**Step 1:** define routes: `/` (Dashboard), `/attractions`, `/weather`, `/cost`, `/banking`, `/bathroom`, `/bolt`, `/counter`, `/location`, `/settings`, `/splash`.
-**Step 2:** `dotnet build` → succeeded.
-**Step 3:** Commit.
-
-### Task 3.2: Octagon dashboard layout
-**Objective:** Port `dashboard_layout.dart` / `octagon_tile.dart`.
-**Files:** `src/Mathilda/Components/OctagonDashboard.razor` (+ `.razor.css`), `OctagonTile.razor`.
-**Step 1 (bunit test):** renders 8 tiles with expected labels.
-**Step 2:** FAIL (no component). **Step 3 (impl):** CSS clip-path octagon grid of nav tiles. **Step 4:** PASS. Commit.
-
-### Task 3.3: Attractions page
-**Objective:** Port `attractions_page.dart` + `attraction_card.dart`.
-**Files:** `AttractionsPage.razor`, `AttractionCard.razor`.
-**Step 1 (test):** inject mock PlacesService → renders cards for each attraction.
-**Step 2:** FAIL. **Step 3 (impl):** `@foreach` over `PlacesService.FetchNearby`. **Step 4:** PASS. Commit.
-
-### Task 3.4: Weather page
-**Objective:** Port `weather_page.dart`.
-**Files:** `WeatherPage.razor`.
-**Step 1 (test):** renders temp + condition from WeatherService.
-**Step 2:** FAIL. **Step 3 (impl).** **Step 4:** PASS. Commit.
-
-### Task 3.5: Cost calculator page
-**Objective:** Port `cost_page.dart` + `cost_result_card.dart`.
-**Files:** `CostPage.razor`, `CostResultCard.razor`.
-**Step 1 (test):** input 100 THB → result card shows 100.
-**Step 2:** FAIL. **Step 3 (impl).** **Step 4:** PASS. Commit.
-
-### Task 3.6: Banking / Bathroom / Bolt / Counter / Location pages
-**Objective:** Port remaining simple pages (degrade device-only features).
-**Files:** one `.razor` per feature under `src/Mathilda/Components/Pages/`.
-**Step 1:** each builds; `Location` uses `navigator.geolocation` via JSInterop; `Bathroom` lists mock nearest; `Bolt`/`Counter` are stateful UI.
-**Step 2:** `dotnet build` → succeeded. **Step 3:** Commit `feat: port remaining feature pages`.
-
-### Task 3.7: Settings (i18n + theme)
-**Objective:** Port `settings_page.dart` + l10n (en/th).
-**Files:** `SettingsPage.razor`, `Localization.resx` (en + th), `AppTheme.cs`.
-**Step 1 (test):** switching lang updates a rendered string.
-**Step 2:** FAIL. **Step 3 (impl):** resource manager + theme toggle. **Step 4:** PASS. Commit.
-
-### Task 3.8: Splash screen
-**Objective:** Port `splash_page.dart` (startup animation).
-**Files:** `SplashPage.razor`.
-**Step 1:** renders loading state, redirects to `/` after init.
-**Step 2:** `dotnet build` → succeeded. **Step 3:** Commit.
-
----
-
-## Phase 4 — Deploy config (Vercel static + Convex)
-
-### Task 4.1: Vercel static config
-**Objective:** Serve Blazor WASM as static files on Vercel.
-**Files:** Create `vercel.json`, `.vercelignore`.
-**Step 1:** write `vercel.json`:
-```json
-{
-  "buildCommand": "dotnet publish src/Mathilda/Mathilda.csproj -c Release -o publish",
-  "outputDirectory": "publish/wwwroot",
-  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
-}
+Client (Blazor WASM)          ConvexClient                Convex HTTP
+  │                                │                          │
+  │ FetchNearby(radiusKm)          │                          │
+  ├──────────────────────────────►│ POST {DEPLOY_URL}/api/query
+  │                                ├─────────────────────────►│ query("places/list", {radiusKm})
+  │                                │   body {path,args,format:"json"}
+  │                                │◄─────────────────────────┤ scans `places` table
+  │                                │◄── {status:"success",value:[...]}
+  │  List<Attraction> (mapped)     │                          │
+  │◄───────────────────────────────┤                          │
+  │  render cards                  │                          │
 ```
-**Step 2:** Commit `feat: vercel static config for Blazor WASM`.
-
-### Task 4.2: Convex deploy wiring
-**Objective:** Document + env wiring for Convex.
-**Files:** Create `convex/README.md`, update root `README.md`.
-**Step 1:** document `npx convex dev` to push schema; set `CONVEX_DEPLOYMENT` env in Vercel.
-**Step 2:** Commit.
-
-### Task 4.3: CI build check
-**Objective:** GitHub Actions builds the app on push.
-**Files:** `.github/workflows/build.yml`.
-**Step 1:** workflow runs `dotnet build` + `dotnet test` on ubuntu with dotnet 8.
-**Step 2:** push, confirm green. **Step 3:** Commit `ci: build + test workflow`.
+Fallback: when `CONVEX_DEPLOYMENT` (deploy URL) is empty, `WeatherService` returns a mock snapshot (tempC 31, "Sunny") — preserving Quicky client-only behavior.
 
 ---
 
-## Phase 5 — Final review
-- Run full `dotnet test` → all green.
-- `dotnet publish` → `publish/wwwroot` produced (static, Vercel-ready).
-- Dispatch integration reviewer (final task of subagent-driven-development).
-- Push `main`; tag `v0.1.0`.
+## Mockups (text/ASCII — layout intent, not pixel-final)
+
+### Octagon dashboard (port of `octagon_tile.dart`)
+```
+        [Attractions]   [Weather]
+              \           /
+        [Cost] — [ MATHILDA ] — [Banking]
+              /           \
+        [Bathroom]     [Bolt]
+              \           /
+        [Counter]     [Location]   (+ Settings, Splash off-grid)
+```
+Each tile = clip-path octagon `<a href="/route">` with label; verified by `OctagonDashboardTests` (8 tiles, expected labels).
+
+### Settings (current reality — G2 open)
+```
+┌──────────────────────────┐
+│ Settings                 │
+│ Language [English ▾]     │  <- @bind Language ("en"/"th")
+│ Theme    [Light   ▾]     │  <- @bind Theme ("light"/"dark")
+│ [Save]                   │
+│ Saved: lang=en, theme=light │
+└──────────────────────────┘
+```
+i18n via `.resx` (specced, not built) OR accept as static en/th select (descope).
+
+---
+
+## Risk Table
+
+| Risk | Likelihood | Impact | Mitigation |
+|------|-----------|--------|------------|
+| `ConvexClient` untested (G1) → silent envelope/HTTP breakage | Medium | High | Add `ConvexClientTests.cs` (mock HttpMessageHandler) before release |
+| i18n scope creep (G2) — resx not started, blocks Settings spec | Medium | Medium | Decide implement-vs-descope this milestone; do not leave half-done |
+| Vercel serves stale WASM (no cache-bust) on redeploy | Medium | Medium | Verify `publish/wwwroot` asset hashing in `dotnet publish` smoke test (G5) |
+| `LocationPage` geolocation denied/unsupported → silent no-op (G4) | Medium | Low | Degrade to "location unavailable" message; verify interop |
+| CI pins dotnet 8.0.x while local is 10.0.110 → drift confusion | Low | Low | Both target net8.0; keep CI pin, note local SDK in README |
+
+---
+
+## Phase 0 — Repository scaffold (DONE)
+
+- Repo: `https://github.com/TeacherEvan/Mathilda.git` cloned to `/home/ewaldt/Documents/VS/Other/Mathilda`.
+- `Mathilda.sln`; `src/Mathilda` (Blazor WASM), `tests/Mathilda` (xUnit/bunit), `convex/`, `docs/`.
+- `src/Mathilda/Mathilda.csproj` (`Microsoft.NET.Sdk.BlazorWebAssembly`, `net8.0`, `Nullable`/`ImplicitUsings` enabled).
+- `tests/Mathilda/Mathilda.Tests.csproj` (`Microsoft.NET.Sdk.Razor`, xUnit 2.6.6, bunit 1.28.9).
+
+## Phase 1 — Domain models (DONE, tested)
+
+- `src/Mathilda/Models/Attraction.cs` (`record Attraction(string Name, double DistanceKm, string Type, bool OpenNow)`) + `tests/Mathilda/Models/AttractionTests.cs`.
+- `src/Mathilda/Models/WeatherSnapshot.cs` (`record WeatherSnapshot(double TempC, string Condition, string[] Forecast)`) + `WeatherSnapshotTests.cs`.
+- `src/Mathilda/Models/TripCostEntry.cs` + `CostResult.cs` + `TripCostEntryTests.cs`.
+- Verify: `dotnet test` → 3 model tests green.
+
+## Phase 2 — Convex data layer (DONE except G1)
+
+### Task 2.1: ConvexClient base (HTTP) — DONE, NEEDS TEST (G1)
+- `src/Mathilda/Services/ConvexClient.cs`: `QueryAsync<T>(path, args?)` / `MutationAsync<T>(path, args?)` POST to `{deployUrl}/api/query|mutation` with `{path, args, format:"json"}`, reads `{status, value}`. Real signature uses `object? args = null` and `ConvexEnvelope<T>`; plan's original snippet (`ConvexClient(HttpClient, string)` ctor, no nullable default) is accurate on ctor, add the nullable default.
+- **G1 (TODO):** add `tests/Mathilda/Services/ConvexClientTests.cs` — mock `HttpMessageHandler` returns `{"status":"success","value":[{"name":"Mock Cafe"}]}`; assert `QueryAsync<List<Attraction>>("places/list", new {})` deserializes 1 item. Then `dotnet test` → 8 green.
+
+### Task 2.2: PlacesService over Convex (DONE)
+- `src/Mathilda/Services/PlacesService.cs` wraps `ConvexClient.QueryAsync<List<Attraction>>("places/list", new { radiusKm })`; `tests/Mathilda/Services/PlacesServiceTests.cs` (green).
+
+### Task 2.3: WeatherService over Convex + fallback (DONE)
+- `src/Mathilda/Services/WeatherService.cs`: empty deploy URL → mock snapshot (tempC 31, "Sunny"); else query. `WeatherServiceTests.cs` (green).
+
+### Task 2.4: Convex schema (DONE)
+- `convex/schema.ts` (`places`: name, type, lat?, lng?, addedBy?; `settings`: userId, lang?, theme?), `places.ts` (list/add), `settings.ts`. `convex/README.md` documents `npx convex dev`.
+
+## Phase 3 — UI (DONE except G2/G3/G4)
+
+### Task 3.1: App shell + routing (DONE)
+- `src/Mathilda/App.razor` uses `Router` directly (no `Routes.razor`). Routes: `/` Dashboard, `/attractions`, `/weather`, `/cost`, `/banking`, `/bathroom`, `/bolt`, `/counter`, `/location`, `/settings`, `/splash`. `MainLayout.razor`.
+
+### Task 3.2: Octagon dashboard (DONE)
+- `src/Mathilda/Pages/OctagonDashboard.razor` (+ css) — clip-path octagon grid of 8 nav tiles (inlined; no separate `OctagonTile.razor` — G3). `tests/Mathilda/Pages/OctagonDashboardTests.cs` asserts 8 tiles (green).
+
+### Task 3.3: Attractions page (DONE)
+- `src/Mathilda/Pages/AttractionsPage.razor` — `@foreach` over `PlacesService.FetchNearby`, card markup inlined (no `AttractionCard.razor` — G3).
+
+### Task 3.4: Weather page (DONE)
+- `src/Mathilda/Pages/WeatherPage.razor` — renders temp + condition from `WeatherService`.
+
+### Task 3.5: Cost calculator page (DONE)
+- `src/Mathilda/Pages/CostPage.razor` — input amount/currency/category → `CostResult` (result card inlined, no `CostResultCard.razor` — G3).
+
+### Task 3.6: Banking / Bathroom / Bolt / Counter / Location (DONE, G4 open)
+- One `.razor` per feature under `src/Mathilda/Pages/`. `BathroomPage` lists mock nearest; `BoltPage`/`CounterPage` stateful UI. **G4:** confirm `LocationPage` uses `navigator.geolocation` via JSInterop and degrades gracefully.
+
+### Task 3.7: Settings i18n + theme (PARTIAL — G2 open)
+- Current: `src/Mathilda/Pages/SettingsPage.razor` plain `<select @bind>` for Language (en/th) + Theme (light/dark), no `.resx`, no `AppTheme.cs`. **Decision required (G2):** implement `Localization.resx` (en+th) + resource-manager switching + `AppTheme.cs` (as originally specced), OR descope i18n and document Settings as en/th-by-binding. Until decided, this task is INCOMPLETE.
+
+### Task 3.8: Splash screen (DONE)
+- `src/Mathilda/Pages/SplashPage.razor` — loading state, redirect to `/` after init.
+
+## Phase 4 — Deploy config (DONE)
+
+### Task 4.1: Vercel static config (DONE)
+- `vercel.json`: `buildCommand: dotnet publish src/Mathilda/Mathilda.csproj -c Release -o publish`, `outputDirectory: publish/wwwroot`, SPA rewrite `/(.*) → /index.html`. `.vercelignore` present.
+
+### Task 4.2: Convex deploy wiring (DONE)
+- `convex/README.md` + root `README.md` document `npx convex dev` + `CONVEX_DEPLOYMENT` env in Vercel.
+
+### Task 4.3: CI build check (DONE)
+- `.github/workflows/build.yml`: ubuntu-latest, `actions/setup-dotnet@v4` `dotnet-version: '8.0.x'`, restore → `dotnet build --no-restore -c Release` → `dotnet test --no-build -c Release`. Green on push/PR.
+
+## Phase 5 — Final review (REMAINING — G5)
+
+1. Close G1: add + pass `ConvexClientTests.cs` (target 8 green).
+2. Close G2: i18n decision implemented or formally descoped.
+3. Close G3/G4: plan wording aligned to actual components; location interop verified.
+4. `dotnet test` → all green.
+5. `dotnet publish src/Mathilda/Mathilda.csproj -c Release -o publish` → confirm `publish/wwwroot` produced (static, Vercel-ready) (G5).
+6. Push `main`; tag `v0.1.0`.
 
 ---
 
 ## Hard constraints (do NOT violate)
-- Vercel hosts ONLY static output (`wwwroot`). No server-side .NET.
+- Vercel hosts ONLY static output (`publish/wwwroot`). No server-side .NET.
 - Convex reached ONLY via HTTP API from C# (no C# SDK exists).
 - No browser API for `installed_apps` → omit; for `flutter_secure_storage` → use localStorage with note.
 - Secrets (Convex deploy key) via Vercel env vars, never committed.
 
 ## Verification gate per task
-- `dotnet test` green for that task's tests.
+- `dotnet test` green for that task's tests (CI mirrors locally).
 - `dotnet build` succeeds for the whole solution after each Phase-3 task.
+- Reconcile against the live tree (`git status` / `find src tests`) before marking any task DONE — do not trust the plan's own status.
 - No `dotnet build` warnings treated as errors unless Phase complete.
