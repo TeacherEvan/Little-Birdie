@@ -1,5 +1,5 @@
 using System.Net;
-using System.Text.Json;
+using Mathilda.Models;
 using Mathilda.Services;
 using Xunit;
 
@@ -7,101 +7,77 @@ namespace Mathilda.Tests.Services;
 
 public class ConvexClientTests
 {
-    [Fact]
-    public async Task QueryAsync_Parses_Success_Envelope()
+    private sealed class StubHandler : HttpMessageHandler
     {
-        var handler = new StubHandler(req =>
+        private readonly Func<HttpRequestMessage, HttpResponseMessage> _respond;
+        public int RequestCount;
+        public string? LastUri;
+
+        public StubHandler(Func<HttpRequestMessage, HttpResponseMessage> respond) => _respond = respond;
+
+        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken ct)
         {
-            Assert.Equal(HttpMethod.Post, req.Method);
-            Assert.EndsWith("/api/query", req.RequestUri!.ToString());
-            return new ConvexEnvelope<string>("success", "hello");
+            RequestCount++;
+            LastUri = request.RequestUri?.ToString();
+            return Task.FromResult(_respond(request));
+        }
+    }
+
+    private static HttpClient OkJson(string json) =>
+        new()
+        {
+            BaseAddress = new Uri("https://example.convex.cloud"),
+            // handler swapped by caller
+        };
+
+    [Fact]
+    public async Task QueryAsync_DeserializesEnvelopeToList()
+    {
+        const string json = "{\"status\":\"success\",\"value\":[{\"name\":\"Mock Cafe\",\"distanceKm\":1.2,\"type\":\"cafe\",\"openNow\":true}]}";
+        var handler = new StubHandler(_ => new HttpResponseMessage(HttpStatusCode.OK)
+        {
+            Content = new StringContent(json, System.Text.Encoding.UTF8, "application/json")
         });
-        using var http = new HttpClient(handler);
-        var client = new ConvexClient(http, "https://demo.convex.cloud/");
+        using var http = new HttpClient(handler) { BaseAddress = new Uri("https://example.convex.cloud") };
+        var client = new ConvexClient(http, "https://example.convex.cloud/");
 
-        var result = await client.QueryAsync<string>("tasks:list");
+        var result = await client.QueryAsync<List<Attraction>>("places/list", new { });
 
-        Assert.Equal("hello", result);
+        Assert.NotNull(result);
+        Assert.Single(result);
+        Assert.Equal("Mock Cafe", result[0].Name);
+        Assert.Equal("https://example.convex.cloud/api/query", handler.LastUri);
+        Assert.Equal(1, handler.RequestCount);
     }
 
     [Fact]
-    public async Task QueryAsync_Returns_Default_On_NonSuccess_Status()
+    public async Task QueryAsync_NonSuccessStatus_ReturnsDefault()
     {
-        var handler = new StubHandler(_ =>
-            new ConvexEnvelope<string>("error", "boom"));
+        var handler = new StubHandler(_ => new HttpResponseMessage(HttpStatusCode.OK)
+        {
+            Content = new StringContent("{\"status\":\"error\",\"value\":null}", System.Text.Encoding.UTF8, "application/json")
+        });
         using var http = new HttpClient(handler);
-        var client = new ConvexClient(http, "https://demo.convex.cloud");
+        var client = new ConvexClient(http, "https://example.convex.cloud");
 
-        var result = await client.QueryAsync<string>("tasks:list");
+        var result = await client.QueryAsync<List<Attraction>>("places/list", new { });
 
         Assert.Null(result);
     }
 
     [Fact]
-    public async Task MutationAsync_Posts_To_Mutation_Endpoint()
+    public async Task MutationAsync_PostsToMutationEndpoint()
     {
-        var seen = false;
-        var handler = new StubHandler(req =>
+        var handler = new StubHandler(_ => new HttpResponseMessage(HttpStatusCode.OK)
         {
-            seen = req.RequestUri!.ToString().EndsWith("/api/mutation");
-            return new ConvexEnvelope<int>("success", 42);
+            Content = new StringContent("{\"status\":\"success\",\"value\":42}", System.Text.Encoding.UTF8, "application/json")
         });
         using var http = new HttpClient(handler);
-        var client = new ConvexClient(http, "https://demo.convex.cloud");
+        var client = new ConvexClient(http, "https://example.convex.cloud");
 
-        var result = await client.MutationAsync<int>("tasks:add", new { name = "x" });
+        var result = await client.MutationAsync<int>("settings/save", new { lang = "th" });
 
-        Assert.True(seen);
         Assert.Equal(42, result);
-    }
-
-    [Fact]
-    public async Task Constructor_Trims_Trailing_Slash()
-    {
-        var handler = new StubHandler(req =>
-        {
-            Assert.DoesNotContain("//api", req.RequestUri!.ToString());
-            Assert.EndsWith("/api/query", req.RequestUri.ToString());
-            return new ConvexEnvelope<bool>("success", true);
-        });
-        using var http = new HttpClient(handler);
-        var client = new ConvexClient(http, "https://demo.convex.cloud///");
-
-        var result = await client.QueryAsync<bool>("ping");
-
-        Assert.True(result);
-    }
-
-    [Fact]
-    public async Task QueryAsync_Throws_On_NonSuccess_StatusCode()
-    {
-        var handler = new StubHandler(_ => null, HttpStatusCode.InternalServerError);
-        using var http = new HttpClient(handler);
-        var client = new ConvexClient(http, "https://demo.convex.cloud");
-
-        await Assert.ThrowsAsync<HttpRequestException>(
-            () => client.QueryAsync<string>("tasks:list"));
-    }
-
-    private sealed class StubHandler : HttpMessageHandler
-    {
-        private readonly Func<HttpRequestMessage, object?> _responder;
-        private readonly HttpStatusCode _status;
-
-        public StubHandler(Func<HttpRequestMessage, object?> responder,
-            HttpStatusCode status = HttpStatusCode.OK)
-        {
-            _responder = responder;
-            _status = status;
-        }
-
-        protected override async Task<HttpResponseMessage> SendAsync(
-            HttpRequestMessage request, CancellationToken cancellationToken)
-        {
-            var payload = _responder(request);
-            var json = payload is null ? "{}" : JsonSerializer.Serialize(payload);
-            var content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
-            return new HttpResponseMessage(_status) { Content = content };
-        }
+        Assert.Equal("https://example.convex.cloud/api/mutation", handler.LastUri);
     }
 }

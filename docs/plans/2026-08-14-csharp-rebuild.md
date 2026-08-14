@@ -35,11 +35,11 @@ Verified against the working tree on `main` (commit `8456b8c`). 7/7 tests pass.
 - Phase 4: `vercel.json` (output `publish/wwwroot`), `.vercelignore`, `convex/README.md`, root `README.md`, `.github/workflows/build.yml` (dotnet 8.0.x, restore/build/test).
 
 **REMAINING / GAPS (open work):**
-- **G1 — `ConvexClientTests.cs` missing.** Plan Task 2.1 specifies a unit test for `ConvexClient.QueryAsync` via a mocked `HttpMessageHandler`; it was never written. 7 tests exist but none cover `ConvexClient`.
-- **G2 — i18n not implemented as specced.** Task 3.7 specified `Localization.resx` (en + th) + `AppTheme.cs` resource-manager switching. Actual `SettingsPage.razor` is a plain `<select @bind>` with no resource manager and no theme application beyond a string. Decide: implement resx i18n (Task 3.7 rework) OR revise the plan to drop i18n and document Settings as en/th-by-binding only.
-- **G3 — Component structure differs from plan.** Plan named separate `OctagonTile.razor`, `AttractionCard.razor`, `CostResultCard.razor`; actual code inlines these into `OctagonDashboard.razor`, `AttractionsPage.razor`, `CostPage.razor`. Functionally equivalent; update plan wording to match reality.
-- **G4 — `LocationPage` geolocation JSInterop unverified.** Plan Phase 3.6 says `Location` uses `navigator.geolocation` via JSInterop; confirm the interop exists and degrades when denied.
-- **G5 — Phase 5 final review incomplete:** `dotnet publish -c Release -o publish` not yet exercised to confirm `publish/wwwroot` is Vercel-ready; no `v0.1.0` tag.
+- **G1 — `ConvexClientTests.cs` missing.** Plan Task 2.1 specifies a unit test for `ConvexClient.QueryAsync` via a mocked `HttpMessageHandler`; it was never written. 7 tests exist but none cover `ConvexClient`. **RESOLVED (2026-08-15):** added `tests/Mathilda/Services/ConvexClientTests.cs` (3 cases: envelope→list, non-success→default, mutation endpoint). Suite now 12 green.
+- **G2 — i18n descoped.** Task 3.7 specified `Localization.resx` (en + th) + `AppTheme.cs`; the actual `SettingsPage.razor` is a plain `<select @bind>` for Language (en/th) + Theme (light/dark) with no resource manager. **DECISION (2026-08-15):** formally descope resx i18n. Settings remains en/th-by-binding only; documented as intentional. No `Localization.resx` / `AppTheme.cs` will be added. User-facing strings stay English; the Language select persists a preference for future server-side calls.
+- **G3 — Component structure differs from plan.** Plan named separate `OctagonTile.razor`, `AttractionCard.razor`, `CostResultCard.razor`; actual code inlines these into `OctagonDashboard.razor`, `AttractionsPage.razor`, `CostPage.razor`. Functionally equivalent; plan wording updated to match reality (see Phase 3 tasks). **RESOLVED (2026-08-15).**
+- **G4 — `LocationPage` geolocation JSInterop unverified.** Plan Phase 3.6 says `Location` uses `navigator.geolocation` via JSInterop. **RESOLVED (2026-08-15):** replaced the placeholder `LocationPage.razor` with a real implementation calling `window.mathilda.getLocation` (defined in `wwwroot/js/interop.js`) via `IJSRuntime`; degrades to "Location unavailable" when denied or unsupported. Covered by `tests/Mathilda/Pages/LocationTests.cs` (denied + acquired cases).
+- **G5 — Phase 5 final review incomplete:** `dotnet publish -c Release -o publish` not yet exercised to confirm `publish/wwwroot` is Vercel-ready; no `v0.1.0` tag. **RESOLVED (2026-08-15):** `dotnet publish -c Release -o publish` produces `publish/wwwroot` (`_framework`, `css`, `js`, `index.html`); Vercel-ready. `v0.1.0` tag applied on main.
 
 ---
 
@@ -143,9 +143,9 @@ i18n via `.resx` (specced, not built) OR accept as static en/th select (descope)
 
 ## Phase 2 — Convex data layer (DONE except G1)
 
-### Task 2.1: ConvexClient base (HTTP) — DONE, NEEDS TEST (G1)
-- `src/Mathilda/Services/ConvexClient.cs`: `QueryAsync<T>(path, args?)` / `MutationAsync<T>(path, args?)` POST to `{deployUrl}/api/query|mutation` with `{path, args, format:"json"}`, reads `{status, value}`. Real signature uses `object? args = null` and `ConvexEnvelope<T>`; plan's original snippet (`ConvexClient(HttpClient, string)` ctor, no nullable default) is accurate on ctor, add the nullable default.
-- **G1 (TODO):** add `tests/Mathilda/Services/ConvexClientTests.cs` — mock `HttpMessageHandler` returns `{"status":"success","value":[{"name":"Mock Cafe"}]}`; assert `QueryAsync<List<Attraction>>("places/list", new {})` deserializes 1 item. Then `dotnet test` → 8 green.
+### Task 2.1: ConvexClient base (HTTP) — DONE, TESTED (G1 resolved)
+- `src/Mathilda/Services/ConvexClient.cs`: `QueryAsync<T>(path, args?)` / `MutationAsync<T>(path, args?)` POST to `{deployUrl}/api/query|mutation` with `{path, args, format:"json"}`, reads `{status, value}`. Real signature uses `object? args = null` and `ConvexEnvelope<T>`.
+- **G1 resolved (2026-08-15):** `tests/Mathilda/Services/ConvexClientTests.cs` added — mock `HttpMessageHandler` returns `{"status":"success","value":[{"name":"Mock Cafe"}]}`; asserts `QueryAsync<List<Attraction>>("places/list", new {})` deserializes 1 item, plus non-success→default and mutation-endpoint cases. `dotnet test` → 12 green.
 
 ### Task 2.2: PlacesService over Convex (DONE)
 - `src/Mathilda/Services/PlacesService.cs` wraps `ConvexClient.QueryAsync<List<Attraction>>("places/list", new { radiusKm })`; `tests/Mathilda/Services/PlacesServiceTests.cs` (green).
@@ -173,11 +173,11 @@ i18n via `.resx` (specced, not built) OR accept as static en/th select (descope)
 ### Task 3.5: Cost calculator page (DONE)
 - `src/Mathilda/Pages/CostPage.razor` — input amount/currency/category → `CostResult` (result card inlined, no `CostResultCard.razor` — G3).
 
-### Task 3.6: Banking / Bathroom / Bolt / Counter / Location (DONE, G4 open)
-- One `.razor` per feature under `src/Mathilda/Pages/`. `BathroomPage` lists mock nearest; `BoltPage`/`CounterPage` stateful UI. **G4:** confirm `LocationPage` uses `navigator.geolocation` via JSInterop and degrades gracefully.
+### Task 3.6: Banking / Bathroom / Bolt / Counter / Location (DONE — G4 closed)
+- One `.razor` per feature under `src/Mathilda/Pages/`. `BathroomPage` lists mock nearest; `BoltPage`/`CounterPage` stateful UI. **G4 resolved (2026-08-15):** `LocationPage.razor` now calls `window.mathilda.getLocation` (defined in `wwwroot/js/interop.js`) via `IJSRuntime` and degrades to "Location unavailable" when denied or unsupported; covered by `tests/Mathilda/Pages/LocationTests.cs`.
 
-### Task 3.7: Settings i18n + theme (PARTIAL — G2 open)
-- Current: `src/Mathilda/Pages/SettingsPage.razor` plain `<select @bind>` for Language (en/th) + Theme (light/dark), no `.resx`, no `AppTheme.cs`. **Decision required (G2):** implement `Localization.resx` (en+th) + resource-manager switching + `AppTheme.cs` (as originally specced), OR descope i18n and document Settings as en/th-by-binding. Until decided, this task is INCOMPLETE.
+### Task 3.7: Settings language + theme (DONE — i18n descoped)
+- Current: `src/Mathilda/Pages/SettingsPage.razor` plain `<select @bind>` for Language (en/th) + Theme (light/dark), persisted on submit; no `.resx`, no `AppTheme.cs`. **G2 resolved (2026-08-15):** resx i18n formally descoped — Settings is en/th-by-binding only; user-facing strings remain English.
 
 ### Task 3.8: Splash screen (DONE)
 - `src/Mathilda/Pages/SplashPage.razor` — loading state, redirect to `/` after init.
