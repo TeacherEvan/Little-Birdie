@@ -1,33 +1,26 @@
 @page "/settings"
-@using Microsoft.AspNetCore.Components.Forms
+@using Mathilda.Services
+@inject AppSettingsService Settings
 
 <h2>Settings</h2>
 
-<EditForm Model="@this" OnValidSubmit="Save">
-    <label>Language
-        <select @bind="Language">
-            <option value="en">English</option>
-            <option value="th">Thai</option>
-        </select>
-    </label>
-    <label>Theme
-        <select @bind="Theme">
-            <option value="light">Light</option>
-            <option value="dark">Dark</option>
-        </select>
-    </label>
-    <button type="submit" class="btn">Save</button>
-</EditForm>
+<div class="tabs" role="tablist">
+    <button class="tab @(_active == 0 ? "tab-active" : "")" role="tab" @onclick="@(() => _active = 0)">General</button>
+    <button class="tab @(_active == 1 ? "tab-active" : "")" role="tab" @onclick="@(() => _active = 1)">Privacy</button>
+    <button class="tab @(_active == 2 ? "tab-active" : "")" role="tab" @onclick="@(() => _active = 2)">Advanced</button>
+</div>
 
-<p>@status</p>
+<div class="tab-panel">
+    @if (_active == 0 || _active == 2)
+    {
+        <AdvancedSettingsPanel />
+    }
+    else if (_active == 1)
+    {
+        <PrivacySettingsTab />
+    }
+</div>
 
 @code {
-    public string Language { get; set; } = "en";
-    public string Theme { get; set; } = "light";
-    private string status = "";
-
-    private void Save()
-    {
-        status = $"Saved: lang={Language}, theme={Theme}";
-    }
+    private int _active = 0;
 }

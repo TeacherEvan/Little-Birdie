@@ -1,0 +1,151 @@
+@using Mathilda.Services
+@using Mathilda.Models
+@inject AppSettingsService Settings
+@inject IJSRuntime JS
+
+<div class="settings-panel">
+    <section class="settings-section">
+        <h3>General &amp; Preferences</h3>
+        <div class="field">
+            <label for="lang">Language</label>
+            <select id="lang" @bind="Model.Language">
+                <option value="en">English</option>
+                <option value="th">Thai</option>
+            </select>
+        </div>
+        <div class="field">
+            <label for="theme">Theme</label>
+            <select id="theme" @bind="Model.Theme">
+                <option value="light">Light</option>
+                <option value="dark">Dark</option>
+                <option value="system">System</option>
+            </select>
+        </div>
+        <div class="field">
+            <label for="currency">Currency</label>
+            <select id="currency" @bind="Model.Currency">
+                <option value="THB">THB</option>
+                <option value="USD">USD</option>
+                <option value="EUR">EUR</option>
+                <option value="GBP">GBP</option>
+            </select>
+        </div>
+        <div class="field">
+            <label for="units">Units</label>
+            <select id="units" @bind="Model.UnitSystem">
+                <option value="metric">Metric</option>
+                <option value="imperial">Imperial</option>
+            </select>
+        </div>
+    </section>
+
+    <section class="settings-section">
+        <h3>Startup</h3>
+        <label class="checkbox-row">
+            <input type="checkbox" @bind="Model.SkipStartupVideo" />
+            <span>Skip startup intro video</span>
+        </label>
+        <label class="checkbox-row">
+            <input type="checkbox" @bind="Model.ShowInstallPrompt" />
+            <span>Show PWA install prompt</span>
+        </label>
+    </section>
+
+    <section class="settings-section">
+        <h3>Power User &amp; Developer</h3>
+        <div class="field">
+            <label for="convexUrl">Custom Convex URL</label>
+            <input id="convexUrl" type="text" placeholder="https://your-deployment.convex.cloud"
+                   @bind="Model.CustomConvexUrl" />
+            <button class="btn btn-secondary" @onclick="PingConvexAsync">Ping</button>
+            <span class="ping-status @(_pingOk == true ? "ok" : _pingOk == false ? "err" : "")">
+                @_pingMessage
+            </span>
+        </div>
+        <label class="checkbox-row">
+            <input type="checkbox" @bind="Model.HighAccuracyGps" />
+            <span>High-accuracy GPS</span>
+        </label>
+        <div class="field">
+            <label for="gpsTimeout">GPS timeout (seconds)</label>
+            <input id="gpsTimeout" type="number" min="1" max="60" @bind="Model.GpsTimeoutSeconds" />
+        </div>
+        <label class="checkbox-row">
+            <input type="checkbox" @bind="Model.MockLocationEnabled" />
+            <span>Simulate location (mock)</span>
+        </label>
+        <div class="field">
+            <label for="mockCoords">Mock coordinates (lat,lng)</label>
+            <input id="mockCoords" type="text" placeholder="13.7563,100.5018" @bind="Model.MockCoordinates" />
+        </div>
+        <label class="checkbox-row">
+            <input type="checkbox" @bind="Model.EnableDebugTelemetry" />
+            <span>Enable debug telemetry</span>
+        </label>
+        <div class="field">
+            <button class="btn btn-secondary" @onclick="ForceReloadSwAsync">Force Service Worker Reload</button>
+        </div>
+    </section>
+
+    <div class="modal-actions">
+        <button class="btn btn-primary" @onclick="SaveAsync">Save Settings</button>
+        <span class="save-status @(_saved ? "ok" : "")">@(_saved ? "Saved ✓" : "")</span>
+    </div>
+</div>
+
+@code {
+    private AppSettings Model { get; set; } = new();
+    private bool _saved;
+    private bool? _pingOk;
+    private string _pingMessage = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        Model = await Settings.LoadAsync();
+    }
+
+    private async Task SaveAsync()
+    {
+        await Settings.SaveAsync(Model);
+        _saved = true;
+        StateHasChanged();
+    }
+
+    private async Task PingConvexAsync()
+    {
+        _pingOk = null;
+        _pingMessage = "Pinging…";
+        try
+        {
+            var url = Model.CustomConvexUrl?.Trim();
+            if (string.IsNullOrEmpty(url))
+            {
+                _pingOk = false;
+                _pingMessage = "No URL set";
+                return;
+            }
+            using var client = new HttpClient { BaseAddress = new Uri(url) };
+            var resp = await client.GetAsync("/version");
+            _pingOk = resp.IsSuccessStatusCode;
+            _pingMessage = resp.IsSuccessStatusCode ? "🟢 Reachable" : $"🔴 {resp.StatusCode}";
+        }
+        catch (Exception ex)
+        {
+            _pingOk = false;
+            _pingMessage = $"🔴 {ex.Message}";
+        }
+        StateHasChanged();
+    }
+
+    private async Task ForceReloadSwAsync()
+    {
+        try
+        {
+            await JS.InvokeVoidAsync("mathilda.sw.update");
+        }
+        catch
+        {
+            // best-effort
+        }
+    }
+}

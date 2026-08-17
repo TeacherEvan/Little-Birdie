@@ -1,0 +1,67 @@
+@using Mathilda.Services
+@using Mathilda.Models
+@inject PrivacyConsentService Consent
+@inject IJSRuntime JS
+
+<section class="settings-section">
+    <h3>Privacy &amp; Offline Cache</h3>
+
+    <div class="consent-summary">
+        <h4>Cookie Consent</h4>
+        @if (_consent is null)
+        {
+            <p>Loading consent state…</p>
+        }
+        else
+        {
+            <ul class="consent-state">
+                <li>Essential: <strong>@(_consent.EssentialAccepted ? "On" : "Off")</strong></li>
+                <li>Preferences: <strong>@(_consent.PreferencesAccepted ? "On" : "Off")</strong></li>
+                <li>Analytics: <strong>@(_consent.AnalyticsAccepted ? "On" : "Off")</strong></li>
+                <li>Recorded: <strong>@_consent.ConsentTimestamp.ToString("u")</strong></li>
+            </ul>
+            <button class="btn btn-secondary" @onclick="RevokeAsync">Revoke &amp; Reset Consent</button>
+        }
+    </div>
+
+    <div class="cache-controls">
+        <h4>Offline Cache</h4>
+        <p>Stored data lets Mathilda work without a connection.</p>
+        <button class="btn btn-secondary" @onclick="ClearCacheAsync">Clear Offline Cache</button>
+        <span class="cache-status @(_cacheMsgOk == true ? "ok" : _cacheMsgOk == false ? "err" : "")">@_cacheMsg</span>
+    </div>
+</section>
+
+@code {
+    private PrivacyConsent? _consent;
+    private string _cacheMsg = "";
+    private bool? _cacheMsgOk;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _consent = await Consent.LoadAsync();
+    }
+
+    private async Task RevokeAsync()
+    {
+        await Consent.EssentialOnlyAsync();
+        _consent = await Consent.LoadAsync();
+        StateHasChanged();
+    }
+
+    private async Task ClearCacheAsync()
+    {
+        try
+        {
+            await JS.InvokeVoidAsync("mathilda.storage.clear");
+            _cacheMsgOk = true;
+            _cacheMsg = "Cache cleared ✓";
+        }
+        catch (Exception ex)
+        {
+            _cacheMsgOk = false;
+            _cacheMsg = $"Failed: {ex.Message}";
+        }
+        StateHasChanged();
+    }
+}

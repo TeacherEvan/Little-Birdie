@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" width="192" height="192">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0f172a"/>
+      <stop offset="100%" style="stop-color:#0369a1"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#f59e0b"/>
+      <stop offset="100%" style="stop-color:#d97706"/>
+    </linearGradient>
+  </defs>
+  <rect x="6" y="6" width="180" height="180" rx="36" fill="url(#bg)"/>
+  <g fill="url(#gold)">
+    <path d="M96 30 L79 75 L87 75 L87 120 L105 120 L105 75 L113 75 Z"/>
+    <path d="M53 75 L41 105 L49 105 L49 135 L57 135 L57 105 L65 105 Z"/>
+    <path d="M139 75 L128 105 L144 105 L144 135 L152 135 L152 105 L160 105 Z"/>
+    <circle cx="96" cy="45" r="5" fill="#fbbf24"/>
+    <circle cx="49" cy="82" r="2" fill="#fbbf24"/>
+    <circle cx="143" cy="82" r="2" fill="#fbbf24"/>
+  </g>
+  <text x="96" y="158" text-anchor="middle" font-family="system-ui, sans-serif" font-size="30" font-weight="800" fill="url(#gold)">M</text>
+</svg>

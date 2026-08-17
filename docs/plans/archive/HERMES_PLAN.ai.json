@@ -1,0 +1,40 @@
+{
+  "meta": {
+    "repo": "Mathilda",
+    "group": "Other",
+    "generated": "2026-08-15 18:55",
+    "branch": "main",
+    "commits": "10",
+    "lang": ".sln,.md,.json",
+    "status": "proposed"
+  },
+  "items": [
+    {
+      "area": "Blazor",
+      "action": "Continue C# Blazor WASM rebuild of Quicky; land UI components (Phase 5 done, v0.1.0)."
+    },
+    {
+      "area": "Convex",
+      "action": "Wire Convex HTTP API from C# (no SDK); keep schema in sync."
+    },
+    {
+      "area": "Deploy",
+      "action": "Verify Vercel dotnet publish + CONVEX_DEPLOY_KEY wiring."
+    }
+  ],
+  "instructions": "Mathilda (Other): proposed workstreams. Agent reads HERMES_PLAN.html ticks: approve(a)=implement, change(c)=revisit/clarify, skip=ignore. Compact form below.",
+  "compact": [
+    {
+      "a": "B",
+      "summary": "Continue C# Blazor WASM rebuild of Quicky; land UI components (Phase 5 done, v0.1.0)."
+    },
+    {
+      "a": "C",
+      "summary": "Wire Convex HTTP API from C# (no SDK); keep schema in sync."
+    },
+    {
+      "a": "D",
+      "summary": "Verify Vercel dotnet publish + CONVEX_DEPLOY_KEY wiring."
+    }
+  ]
+}
