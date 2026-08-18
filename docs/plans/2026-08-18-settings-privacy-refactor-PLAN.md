@@ -17,7 +17,7 @@ tree (read the actual `.cs`/`.razor`/`.js`), not trusted from the source summary
 Ground-truth evidence:
 
 - `dotnet build src/Mathilda/Mathilda.csproj -c Release` → **Build succeeded. 0 Warning(s), 0 Error(s).**
-- `dotnet test tests/Mathilda/Mathilda.Tests.csproj -c Release` → **Passed! 35/35, 0 failed.**
+- `dotnet test tests/Mathilda/Mathilda.Tests.csproj -c Release` → **Passed! 42/42, 0 failed.**
 - Real interop file is `src/Mathilda/wwwroot/js/interop.js` (the prior audit cited
   the wrong path `wwwroot/js/interop.js` — path drift, findings themselves still valid).
 

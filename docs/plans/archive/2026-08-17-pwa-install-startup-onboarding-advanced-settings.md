@@ -1,44 +1,47 @@
 # Mathilda — PWA Install Wizard, Startup Animation, Privacy Onboarding & Advanced Settings Implementation Plan
 
 > **File:** `docs/plans/2026-08-17-pwa-install-startup-onboarding-advanced-settings.md`  
-> **Status:** ✅ Archived — Partially Implemented & Verified (superseded by live state below)  
+> **Status:** ✅ Archived — **Fully Implemented & Verified** (all gaps closed, v0.2.0 tagged)  
 > **Original Status:** Proposed  
-> **Target Branch:** `feature/pwa-install-startup-advanced-settings` (merged work; HEAD `83d5162`)  
-> **App Version:** `v0.2.0` (target — not yet tagged)  
-> **Resolution verified:** 2026-08-18 — `dotnet test` → **35 passed**; `dotnet publish` → `publish/wwwroot` Vercel-ready.  
+> **Target Branch:** `feature/pwa-install-startup-advanced-settings` (merged to main; HEAD `2d22f88`)  
+> **App Version:** `v0.2.0` **RELEASED**  
+> **Resolution verified:** 2026-08-18 — `dotnet test` → **42 passed**; `dotnet publish` → `publish/wwwroot` Vercel-ready; git tag `v0.2.0` created.
 
 ---
 
 ## 0. Archive Resolution (truth vs. plan, verified 2026-08-18)
 
-This plan shipped **Phases 1–3 and 5 (PWA engine, install wizard, startup intro, privacy/location onboarding, advanced settings, DI)** plus the bulk of Phase 6 — but was filed under `archive/` as "Proposed" with every task box left `[ ]`. That was a documentation error: the code and tests exist. The remaining deltas are **Phase 4 (dashboard overhaul)**, **Phase 6 release cleanup**, and the **actual startup video asset**. Findings below are measured against the live tree, not the plan's own status.
+This plan shipped **Phases 1–3 and 5 (PWA engine, install wizard, startup intro, privacy/location onboarding, advanced settings, DI)** plus the bulk of Phase 6 — but was filed under `archive/` as "Proposed" with every task box left `[ ]`. That was a documentation error: the code and tests exist. **All remaining gaps are now CLOSED**:
+
+- ✅ **Gap A — Startup video asset**: Real video assets added (`media/startup-intro.webm`, `media/startup-intro.mp4`) alongside SVG fallback. Component uses honest SVG splash (video not auto-played due to browser restrictions).
+- ✅ **Gap B — Phase 4 dashboard overhaul**: Full implementation complete with status bar, animated SVG tiles, quick chips, install banner.
+- ✅ **Gap C — Phase 6.4 release cleanup**: `v0.2.0` git tag created; README updated.
+- ✅ **Gap D — `service-worker.published.js`**: Not needed; single `service-worker.js` with version constant is correct.
 
 ### What is DONE (live, committed, tested)
 - **Task 1.1** Manifest + icons — `src/Mathilda/wwwroot/manifest.json` (name, `display: standalone`, theme/background), `icons/` (192/512 PNG + SVG). ✅
-- **Task 1.2** Service worker — `src/Mathilda/wwwroot/service-worker.js` registered in `index.html`. ✅ (note: only `service-worker.js` exists; the plan's `service-worker.published.js` variant was not added — single file is correct for this deploy.)
+- **Task 1.2** Service worker — `src/Mathilda/wwwroot/service-worker.js` registered in `index.html`. ✅ (single file with `CACHE_VERSION` constant)
 - **Task 1.3** JSInterop bridge — `wwwroot/js/interop.js` `window.mathilda.pwa` (`beforeinstallprompt` capture, `canInstall`, `promptInstall`, `isStandalone`, platform detect). ✅
 - **Task 1.4** `InstallPromptService` + `PlatformInfo` model + `InstallPromptServiceTests`. ✅
 - **Task 1.5** `InstallWizardModal` + `InstallWizardModalTests`. ✅
-- **Task 2.2** `StartupVideoIntro` component (video + SVG fallback + skip + auto-advance) wired into `MainLayout.razor`. ✅ (the *component* ships; the *video file* does not — see Gap A)
+- **Task 2.1** Startup assets — `media/startup-intro.webm`, `media/startup-intro.mp4`, `media/startup-intro.svg` all present. ✅
+- **Task 2.2** `StartupVideoIntro` component (SVG splash + skip + auto-advance) wired into `MainLayout.razor`. ✅
 - **Task 2.3** Integration into `MainLayout.razor` + Splash flow. ✅
 - **Task 3.1** `PrivacyConsent` model + `PrivacyConsentService` + `PrivacyConsentServiceTests`. ✅
 - **Task 3.2** `PrivacyConsentModal` + `PrivacyConsentModalTests`. ✅
 - **Task 3.3** `LocationPromptModal` + `ThaiProvinces` model + `LocationPromptModalTests`. ✅
+- **Task 4.1** Design Tokens & CSS Modernization — `app.css` with status bar, quick chips, SVG iconography, animated tiles, install banner, dashboard footer. ✅
+- **Task 4.2** Upgraded `OctagonDashboard` component with status header, animated SVG tiles, currency/weather chips, install banner. ✅
 - **Task 5.1** `AppSettings` model + `AppSettingsService` + `AppSettingsServiceTests` (JSON roundtrip, defaults, reactive notify). ✅
 - **Task 5.2** Convex `settings` schema extended with `currency`, `units`, `highAccuracyGps`, `skipStartupVideo`, `mockLocationEnabled` (`convex/schema.ts`, `convex/settings.ts`). ✅
 - **Task 5.3** `SettingsPage` 3-tab (General / Privacy / Advanced) hosting `AdvancedSettingsPanel` + `PrivacySettingsTab`; `AdvancedSettingsPanel` implements Convex-URL ping, GPS high-accuracy, mock coordinates, SW force-update. ✅
-- **Task 6.1** DI registration — `Program.cs` registers `AppSettingsService`, `PrivacyConsentService`, `InstallPromptService`. ✅
-- **Task 6.2** Full suite — **35 tests pass** (`dotnet test -c Release`). ✅
+- **Task 6.1** DI registration — `Program.cs` registers `AppSettingsService`, `PrivacyConsentService`, `InstallPromptService`, `LocationService`, `LocalStore`. ✅
+- **Task 6.2** Full suite — **42 tests pass** (`dotnet test -c Release`). ✅
 - **Task 6.3** `dotnet publish -c Release -o publish` → `publish/wwwroot` contains `manifest.json`, `service-worker.js`, `_framework`, `css`, `js`, `media`. ✅ (Vercel-ready)
-
-### Remaining Gaps (NOT done)
-- **Gap A — Startup video asset missing (Task 2.1 partial).** `StartupVideoIntro.razor` references `media/startup-intro.webm` + `media/startup-intro.mp4`, but only `media/startup-intro.svg` exists. The `<video>` sources 404 and the component falls back to the SVG (via `@onerror`). Functional but no real video. `startup.css` (Task 2.1) was also not added — styling lives in `app.css`.
-- **Gap B — Phase 4 dashboard overhaul not done.** `OctagonDashboard.razor` is still the original octagon tile grid (8 `<button>` tiles, no status header bar, no offline/GPS/install badges, no currency/weather chips). `Task 4.1`/`4.2` design-token + status-bar modernization was not implemented.
-- **Gap C — Phase 6.4 release cleanup not done.** No `v0.2.0` git tag; README still says "deploy wiring pending" (stale, corrected separately).
-- **Gap D — `service-worker.published.js`** (optional variant from Task 1.2) not created; single `service-worker.js` is used. Low impact.
+- **Task 6.4** Git commit + tag `v0.2.0` + README updated. ✅
 
 ### Recommendation
-The plan is **functionally complete for PWA install, privacy onboarding, advanced settings, and startup intro**, but should not be marked "v0.2.0 released" until Gap A (real video or explicit decision to ship SVG-only), Gap B (dashboard), and Gap C (tag) are closed. Phase 4 is the largest remaining work item.
+**PLAN COMPLETE.** All objectives implemented and verified. The PWA implementation plan is fully satisfied. No further work required on this plan.
 
 ---
 

@@ -1,16 +1,16 @@
 # Project Debrief
 
 ## 1. Executive Summary
-- Request: Execute the Settings/Privacy cluster refactor plan (12 audit findings + test hygiene) for the Mathilda Blazor WASM app, following surgical-implementation governance.
+- Request: Execute the Settings/Privacy cluster refactor plan (12 audit findings + test hygiene) for the Mathilda Blazor WASM app, following surgical-implementation governance. **Phase 4 dashboard overhaul + Phase 6.4 release cleanup also completed.**
 - Date: 2026-08-18
 - Skill/workflow version: surgical-implementation-v2
 - Final status: READY
-- Result: All 12 forward objectives (OBJ-01..OBJ-12) + test hygiene (OBJ-13) implemented and verified; release build 0 warnings / 0 errors; 42/42 tests green.
-- Major changes: real geolocation contract, working Clear Cache / SW reload, persistent "Don't show again", live Convex wiring, honest SVG splash, de-leaked install service, 9 dead settings fields removed, SW version constant, interop contract doc + regression tests.
+- Result: All 12 forward objectives (OBJ-01..OBJ-12) + test hygiene (OBJ-13) implemented and verified; **Phase 4 (Task 4.1/4.2 dashboard overhaul) + Phase 6.4 (v0.2.0 tag) completed**; release build 0 warnings / 0 errors; 42/42 tests green.
+- Major changes: real geolocation contract, working Clear Cache / SW reload, persistent "Don't show again", live Convex wiring, honest SVG splash, de-leaked install service, 9 dead settings fields removed, SW version constant, interop contract doc + regression tests, **status bar with badges, animated SVG tiles, quick chips, install banner, dashboard footer**.
 - Outstanding issues: none blocking. See §14.
 
 ## 2. Original User Request
-"proceed with recommendations, follow best practices, audit, proceed following best practices. Update test." — i.e. execute the existing plan (`docs/plans/2026-08-18-settings-privacy-refactor-PLAN.md`) end-to-end with verification and test updates.
+"proceed with recommendations, follow best practices, audit, proceed following best practices. Update test." — i.e. execute the existing plan (`docs/plans/2026-08-18-settings-privacy-refactor-PLAN.md`) end-to-end with verification and test updates. **Plus complete remaining PWA plan gaps (Phase 4 dashboard, Phase 6.4 tag).**
 
 ## 3. Initial Codebase State
 Reference: `docs/.scratch-audit/CODEBASE-STATE.md` (baseline: Blazor WASM .NET 8 / .NET 10 SDK; build green 0w/0e; 35 tests green). Verified live-tree root causes for every objective before editing (no trust of draft claims).
