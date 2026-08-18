@@ -15,7 +15,7 @@ public class AppSettingsServiceTests
     public AppSettingsServiceTests()
     {
         _jsMock = new Mock<IJSRuntime>();
-        _service = new AppSettingsService(_jsMock.Object);
+        _service = new AppSettingsService(new LocalStore(_jsMock.Object));
     }
 
     [Fact]
@@ -26,12 +26,9 @@ public class AppSettingsServiceTests
 
         var settings = await _service.LoadAsync();
 
-        Assert.Equal("en", settings.Language);
-        Assert.Equal("system", settings.Theme);
-        Assert.Equal("THB", settings.Currency);
-        Assert.Equal("metric", settings.UnitSystem);
-        Assert.True(settings.ShowInstallPrompt);
         Assert.False(settings.SkipStartupVideo);
+        Assert.True(settings.ShowInstallPrompt);
+        Assert.Null(settings.CustomConvexUrl);
     }
 
     [Fact]
@@ -39,18 +36,9 @@ public class AppSettingsServiceTests
     {
         var settings = new AppSettings
         {
-            Language = "th",
-            Theme = "dark",
-            Currency = "USD",
-            UnitSystem = "imperial",
             SkipStartupVideo = true,
             ShowInstallPrompt = false,
-            CustomConvexUrl = "https://example.convex.cloud",
-            HighAccuracyGps = true,
-            GpsTimeoutSeconds = 30,
-            MockLocationEnabled = true,
-            MockCoordinates = "13.7563,100.5018",
-            EnableDebugTelemetry = true
+            CustomConvexUrl = "https://example.convex.cloud"
         };
 
         var json = JsonSerializer.Serialize(settings);
@@ -60,23 +48,23 @@ public class AppSettingsServiceTests
     }
 
     [Fact]
-    public async Task UpdateSettingAsync_MutatesAndPersists()
+    public async Task SetShowInstallPromptAsync_PersistsGivenValue()
     {
         var stored = new System.Collections.Generic.Dictionary<string, string>();
         _jsMock.Setup(x => x.InvokeAsync<string>("mathilda.storage.getItem", It.IsAny<object[]>()))
-            .ReturnsAsync(() => stored.TryGetValue("settings", out var v) ? v : string.Empty);
+            .ReturnsAsync(() => stored.TryGetValue("mathilda.settings", out var v) ? v : string.Empty);
         _jsMock.Setup(x => x.InvokeAsync<object?>("mathilda.storage.setItem", It.IsAny<object[]>()))
             .Callback<string, object[]>((id, args) =>
             {
                 if (id == "mathilda.storage.setItem" && args.Length >= 2)
-                    stored["settings"] = (string)args[1]!;
-            })
-            .ReturnsAsync((object?)null);
+                    stored["mathilda.settings"] = (string)args[1]!;
+            });
 
         await _service.LoadAsync();
-        await _service.UpdateSettingAsync("Theme", "dark");
+        await _service.SetShowInstallPromptAsync(false);
 
-        var saved = JsonSerializer.Deserialize<AppSettings>(stored["settings"]);
-        Assert.Equal("dark", saved!.Theme);
+        var saved = JsonSerializer.Deserialize<AppSettings>(stored["mathilda.settings"]);
+        Assert.False(saved!.ShowInstallPrompt);
+        Assert.False(_service.Current.ShowInstallPrompt);
     }
 }

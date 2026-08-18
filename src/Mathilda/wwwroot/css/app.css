@@ -309,6 +309,34 @@ main { padding: var(--space-4); }
 }
 @keyframes mathilda-spin { to { transform: rotate(360deg); } }
 
+/* Startup intro — animated brand video with SVG fallback */
+.startup-intro {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface-1, #0f172a);
+}
+.startup-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  background: var(--surface-1, #0f172a);
+}
+.startup-fallback {
+  width: min(100%, 800px);
+  height: auto;
+}
+.skip-btn {
+  position: fixed;
+  top: var(--space-4, 1rem);
+  right: var(--space-4, 1rem);
+  z-index: 2001;
+  opacity: 0.85;
+}
+
 /* Modal — overlay + card */
 .modal-overlay {
   position: fixed;
@@ -365,3 +393,146 @@ main { padding: var(--space-4); }
     transition-duration: 0.001ms !important;
   }
 }
+
+/* Octagon dashboard — radial tile layout (was inline in OctagonDashboard.razor) */
+.octagon { position: relative; width: 320px; height: 320px; margin: 1rem auto; }
+.octagon .tile { /* base .tile styles from design system reused */ }
+.octagon .t1 { top: 0;    left: 114px; }
+.octagon .t2 { top: 44px; left: 214px; }
+.octagon .t3 { top: 138px;left: 228px; }
+.octagon .t4 { top: 228px;left: 114px; }
+.octagon .t5 { top: 138px;left: 0;     }
+.octagon .t6 { top: 44px; left: 14px;  }
+.octagon .t7 { top: 228px;left: 214px; }
+.octagon .t8 { top: 0;    left: 0;     }
+
+/* ============================================================================
+   6. Dashboard Phase 4 — Status Bar, Quick Chips, Animated Tiles
+   ============================================================================ */
+
+/* Status bar — compact info strip (offline ready, GPS lock, install) */
+.status-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background: var(--surface-glass);
+  backdrop-filter: blur(10px) saturate(140%);
+  -webkit-backdrop-filter: blur(10px) saturate(140%);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  color: var(--text-2);
+  font-size: var(--fs-sm);
+  margin-bottom: var(--space-4);
+}
+.status-bar strong { color: var(--text-1); font-weight: 600; }
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-3);
+  background: var(--surface-glass-strong);
+  border: 1px solid var(--border-subtle);
+  border-radius: 999px;
+  font-size: var(--fs-xs);
+  font-weight: 600;
+}
+.status-badge.ok { border-color: var(--ocean); color: var(--ocean); }
+.status-badge.warn { border-color: var(--amber); color: var(--amber); }
+.status-badge.offline { border-color: var(--text-3); color: var(--text-3); }
+
+/* Quick chips — currency exchange & weather summary */
+.quick-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin: var(--space-3) 0;
+}
+.quick-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: var(--touch-target);
+  padding: 0 var(--space-3);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--text-1);
+  background: var(--surface-glass);
+  border: 1px solid var(--border-subtle);
+  border-radius: 999px;
+  cursor: default;
+}
+
+/* Tile icon — SVG iconography for octagon tiles */
+.tile-icon {
+  width: 36px;
+  height: 36px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Animated tile entrance */
+@keyframes tile-rise {
+  from { opacity: 0; transform: translateY(16px) scale(0.95); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+.octagon .tile {
+  animation: tile-rise 0.4s ease forwards;
+  opacity: 0;
+}
+.octagon .t1 { animation-delay: 0.05s; }
+.octagon .t2 { animation-delay: 0.10s; }
+.octagon .t3 { animation-delay: 0.15s; }
+.octagon .t4 { animation-delay: 0.20s; }
+.octagon .t5 { animation-delay: 0.25s; }
+.octagon .t6 { animation-delay: 0.30s; }
+.octagon .t7 { animation-delay: 0.35s; }
+.octagon .t8 { animation-delay: 0.40s; }
+
+/* Tile pulse on hover (subtle) */
+.tile:hover .tile-icon {
+  animation: icon-pulse 1.5s ease-in-out infinite;
+}
+@keyframes icon-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+/* Install banner in dashboard */
+.install-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background: linear-gradient(135deg, var(--surface-glass), var(--surface-glass-strong));
+  border: 1px solid var(--ocean);
+  border-radius: var(--radius-md);
+  color: var(--text-2);
+  font-size: var(--fs-sm);
+  margin-bottom: var(--space-4);
+}
+.install-banner .btn { flex-shrink: 0; }
+
+/* Dashboard footer — quick currency/weather row */
+.dashboard-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  margin-top: var(--space-4);
+  background: var(--surface-glass);
+  backdrop-filter: blur(10px) saturate(140%);
+  -webkit-backdrop-filter: blur(10px) saturate(140%);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  font-size: var(--fs-sm);
+  color: var(--text-2);
+}
+.dashboard-footer strong { color: var(--text-1); }

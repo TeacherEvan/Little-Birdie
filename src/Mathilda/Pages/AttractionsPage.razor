@@ -2,9 +2,10 @@
 @using Microsoft.AspNetCore.Components
 @using Mathilda.Services
 @inject PlacesService Places
+@inject LocationService Location
 
 <h1>Nearby Attractions</h1>
-<p>Places within 10 km of your current position (mock data until Convex is configured).</p>
+<p>Places within 10 km of @_locationName (@_lat.ToString("0.00"), @_lng.ToString("0.00")) — @(_convexConnected ? "live data" : "mock data")</p>
 
 @if (_attractions is null)
 {
@@ -38,9 +39,21 @@ else
 
 @code {
     private IReadOnlyList<Mathilda.Models.Attraction>? _attractions;
+    private double _lat = 13.75;
+    private double _lng = 100.5;
+    private string _locationName = "Bangkok";
+    private bool _convexConnected;
 
     protected override async Task OnInitializedAsync()
     {
+        var loc = await Location.LoadAsync();
+        if (loc is { } l)
+        {
+            _lat = l.Lat;
+            _lng = l.Lng;
+            _locationName = l.Name;
+        }
+        _convexConnected = Places.IsConvexConnected();
         _attractions = await Places.FetchNearby(10);
     }
 }

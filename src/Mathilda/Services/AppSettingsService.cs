@@ -1,74 +1,50 @@
-using System.Text.Json;
 using Microsoft.JSInterop;
 using Mathilda.Models;
 
 namespace Mathilda.Services;
 
 /// <summary>
-/// Basic AppSettingsService for Phase 1 - stores ShowInstallPrompt setting.
-/// Will be extended in Phase 5 with full settings model.
+/// Persists and exposes the canonical application settings (Phase 5 advanced settings hub).
+/// Settings live in localStorage via the <see cref="LocalStore"/> JSON bridge.
 /// </summary>
 public sealed class AppSettingsService
 {
-    private readonly IJSRuntime _js;
+    private readonly LocalStore _store;
     private const string STORAGE_KEY = "mathilda.settings";
 
-    // Current settings (minimal for Phase 1)
-    public bool ShowInstallPrompt { get; private set; } = true;
+    /// <summary>Cached in-memory snapshot of the last loaded/saved settings.</summary>
+    public AppSettings Current { get; private set; } = new();
 
-    public event Action? OnSettingsChanged;
+    /// <summary>Raised whenever settings are loaded or saved, carrying the new snapshot.</summary>
+    public event Action<AppSettings>? OnSettingsChanged;
 
-    public AppSettingsService(IJSRuntime js)
+    public AppSettingsService(LocalStore store)
     {
-        _js = js;
+        _store = store;
     }
 
+    /// <summary>Loads persisted settings, falling back to defaults on any failure.</summary>
     public async Task<AppSettings> LoadAsync()
     {
-        try
-        {
-            var json = await _js.InvokeAsync<string>("mathilda.storage.getItem", STORAGE_KEY);
-            if (!string.IsNullOrEmpty(json))
-            {
-                var settings = JsonSerializer.Deserialize<AppSettings>(json);
-                if (settings != null)
-                {
-                    ShowInstallPrompt = settings.ShowInstallPrompt;
-                    return settings;
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"[AppSettingsService] Load failed: {ex.Message}");
-        }
-
-        return new AppSettings { ShowInstallPrompt = true };
+        var settings = await _store.LoadAsync(STORAGE_KEY, new AppSettings());
+        Current = settings;
+        OnSettingsChanged?.Invoke(settings);
+        return settings;
     }
 
+    /// <summary>Persists the given settings and notifies subscribers.</summary>
     public async Task SaveAsync(AppSettings settings)
     {
-        try
-        {
-            var json = JsonSerializer.Serialize(settings);
-            await _js.InvokeVoidAsync("mathilda.storage.setItem", STORAGE_KEY, json);
-            ShowInstallPrompt = settings.ShowInstallPrompt;
-            OnSettingsChanged?.Invoke();
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"[AppSettingsService] Save failed: {ex.Message}");
-        }
+        await _store.SaveAsync(STORAGE_KEY, settings);
+        Current = settings;
+        OnSettingsChanged?.Invoke(settings);
     }
 
-    public async Task UpdateSettingAsync(string key, object value)
+    /// <summary>Persists the "show install prompt" preference without mutating a full model.</summary>
+    public async Task SetShowInstallPromptAsync(bool show)
     {
         var current = await LoadAsync();
-        var prop = typeof(AppSettings).GetProperty(key);
-        if (prop != null && prop.CanWrite)
-        {
-            prop.SetValue(current, value);
-            await SaveAsync(current);
-        }
+        current = current with { ShowInstallPrompt = show };
+        await SaveAsync(current);
     }
 }

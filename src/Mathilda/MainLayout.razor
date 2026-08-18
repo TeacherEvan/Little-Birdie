@@ -2,6 +2,7 @@
 @inject AppSettingsService Settings
 @inject PrivacyConsentService Consent
 @inject InstallPromptService InstallPrompt
+@inject LocationService Location
 
 <div class="page">
     @if (!_appReady)
@@ -23,10 +24,12 @@
 @code {
     private bool _appReady;
     private PrivacyConsentModal? _consentModal;
+    private PrivacyConsent? _consent;
 
     protected override async Task OnInitializedAsync()
     {
         await InstallPrompt.InitializeAsync();
+        _consent = await Consent.LoadAsync();
     }
 
     private async Task HandleStartupComplete()
@@ -41,16 +44,21 @@
     private void HandleConsent(PrivacyConsent consent)
     {
         // Consent captured; location prompt appears next in the onboarding flow.
+        _consent = consent;
         StateHasChanged();
     }
 
-    private void HandleLocation((double Lat, double Lng, string Name) loc)
+    private async Task HandleLocation((double Lat, double Lng, string Name) loc)
     {
+        // Persist the chosen location so weather/attractions reflect the real position.
+        await Location.SaveAsync(loc.Lat, loc.Lng, loc.Name);
         StateHasChanged();
     }
 
     private void HandleLocationDismissed()
     {
+        // User skipped location; downstream pages fall back to the last saved
+        // location (or Bangkok default in the service), no telemetry emitted here.
         StateHasChanged();
     }
 }

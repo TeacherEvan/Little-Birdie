@@ -1,6 +1,6 @@
 @using Mathilda.Services
 @using Mathilda.Models
-@inject IJSRuntime JS
+@inject LocationService Location
 
 @if (Visible)
 {
@@ -51,20 +51,15 @@
 
     private async Task RequestGpsAsync()
     {
-        try
+        var coords = await Location.RequestGpsAsync();
+        if (coords is { } c)
         {
-            var result = await JS.InvokeAsync<JsonElement>("mathilda.geolocation.request");
-            if (result.TryGetProperty("lat", out var lat) && result.TryGetProperty("lng", out var lng))
-            {
-                Visible = false;
-                await OnLocationChosen.InvokeAsync((lat.GetDouble(), lng.GetDouble(), "GPS"));
-                return;
-            }
+            await Location.SaveAsync(c.Lat, c.Lng, "GPS");
+            Visible = false;
+            await OnLocationChosen.InvokeAsync((c.Lat, c.Lng, "GPS"));
+            return;
         }
-        catch
-        {
-            // GPS unavailable/denied — fall through to manual selection
-        }
+        // GPS unavailable/denied — fall through to manual selection
         _showFallback = true;
         StateHasChanged();
     }
@@ -79,6 +74,7 @@
     {
         var province = ThaiProvince.All.FirstOrDefault(p => p.Name == _selectedProvince)
                        ?? ThaiProvince.All[0];
+        await Location.SaveAsync(province.Latitude, province.Longitude, province.Name);
         Visible = false;
         await OnLocationChosen.InvokeAsync((province.Latitude, province.Longitude, province.Name));
     }

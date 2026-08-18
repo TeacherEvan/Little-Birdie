@@ -17,7 +17,7 @@ public class PrivacyConsentModalTests : TestContext
     public PrivacyConsentModalTests()
     {
         _jsMock = new Mock<IJSRuntime>();
-        _consentService = new PrivacyConsentService(_jsMock.Object);
+        _consentService = new PrivacyConsentService(new LocalStore(_jsMock.Object));
         Services.AddSingleton(_consentService);
         Services.AddSingleton(_jsMock.Object);
     }

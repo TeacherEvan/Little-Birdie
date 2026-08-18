@@ -15,7 +15,7 @@ public class PrivacyConsentServiceTests
     public PrivacyConsentServiceTests()
     {
         _jsMock = new Mock<IJSRuntime>();
-        _service = new PrivacyConsentService(_jsMock.Object);
+        _service = new PrivacyConsentService(new LocalStore(_jsMock.Object));
     }
 
     [Fact]

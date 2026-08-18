@@ -1,22 +1,11 @@
 @using Mathilda.Services
 @using Mathilda.Models
 @inject AppSettingsService Settings
-@inject IJSRuntime JS
 
 @if (!_completed)
 {
     <div class="startup-intro" role="region" aria-label="Startup introduction">
-        @if (_showVideo && !_videoFailed)
-        {
-            <video class="startup-video" autoplay muted playsinline @onended="MarkComplete" @onerror="HandleVideoError">
-                <source src="media/startup-intro.webm" type="video/webm" />
-                <source src="media/startup-intro.mp4" type="video/mp4" />
-            </video>
-        }
-        else
-        {
-            <img class="startup-fallback" src="media/startup-intro.svg" alt="Mathilda" />
-        }
+        <img class="startup-fallback" src="media/startup-intro.svg" alt="Mathilda" />
 
         <button class="btn btn-ghost skip-btn" @onclick="MarkComplete" aria-label="Skip intro">Skip Intro ✕</button>
 
@@ -32,8 +21,6 @@
     public EventCallback OnComplete { get; set; }
 
     private bool _completed;
-    private bool _showVideo = true;
-    private bool _videoFailed;
     private bool _loading = true;
 
     protected override async Task OnInitializedAsync()
@@ -56,14 +43,8 @@
             return;
         }
 
-        // Auto-advance safety net in case the video never fires onended.
+        // Auto-advance safety net in case the splash is dismissed some other way.
         _ = Task.Delay(8000).ContinueWith(_ => InvokeAsync(MarkComplete));
-    }
-
-    private void HandleVideoError()
-    {
-        _videoFailed = true;
-        StateHasChanged();
     }
 
     private async Task MarkComplete()

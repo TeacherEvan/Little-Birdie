@@ -1,5 +1,6 @@
 @page "/settings"
 @using Mathilda.Services
+@using Mathilda.Models
 @inject AppSettingsService Settings
 
 <h2>Settings</h2>
@@ -11,16 +12,42 @@
 </div>
 
 <div class="tab-panel">
-    @if (_active == 0 || _active == 2)
+    @if (_active == 0)
     {
-        <AdvancedSettingsPanel />
+        <GeneralSettingsTab Model="Model" />
     }
     else if (_active == 1)
     {
         <PrivacySettingsTab />
     }
+    else if (_active == 2)
+    {
+        <AdvancedSettingsPanel Model="Model" />
+    }
 </div>
+
+@if (_active != 1)
+{
+    <div class="modal-actions">
+        <button class="btn btn-primary" @onclick="SaveAsync">Save Settings</button>
+        <span class="save-status @(_saved ? "ok" : "")">@(_saved ? "Saved ✓" : "")</span>
+    </div>
+}
 
 @code {
     private int _active = 0;
+    private AppSettings Model { get; set; } = new();
+    private bool _saved;
+
+    protected override async Task OnInitializedAsync()
+    {
+        Model = await Settings.LoadAsync();
+    }
+
+    private async Task SaveAsync()
+    {
+        await Settings.SaveAsync(Model);
+        _saved = true;
+        StateHasChanged();
+    }
 }

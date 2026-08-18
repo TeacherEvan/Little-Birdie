@@ -19,7 +19,7 @@ public class InstallWizardModalTests : TestContext
     public InstallWizardModalTests()
     {
         _jsMock = new Mock<IJSRuntime>();
-        _appSettingsService = new AppSettingsService(_jsMock.Object);
+        _appSettingsService = new AppSettingsService(new LocalStore(_jsMock.Object));
         _installPromptService = new InstallPromptService(_jsMock.Object, _appSettingsService);
         
         Services.AddSingleton(_installPromptService);

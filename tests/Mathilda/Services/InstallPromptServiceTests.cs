@@ -16,7 +16,7 @@ public class InstallPromptServiceTests
     public InstallPromptServiceTests()
     {
         _jsMock = new Mock<IJSRuntime>();
-        _appSettingsService = new AppSettingsService(_jsMock.Object);
+        _appSettingsService = new AppSettingsService(new LocalStore(_jsMock.Object));
         _service = new InstallPromptService(_jsMock.Object, _appSettingsService);
     }
 
@@ -66,7 +66,7 @@ public class InstallPromptServiceTests
         // Assert
         Assert.False(_service.CanShowInstallPrompt);
         // Verify settings were persisted (AppSettingsService.SaveAsync updates the in-memory flag)
-        Assert.False(_appSettingsService.ShowInstallPrompt);
+        Assert.False(_appSettingsService.Current.ShowInstallPrompt);
     }
 
     [Fact]
@@ -84,16 +84,16 @@ public class InstallPromptServiceTests
 
         // Assert
         Assert.True(_service.CanShowInstallPrompt);
-        Assert.True(_appSettingsService.ShowInstallPrompt);
+        Assert.True(_appSettingsService.Current.ShowInstallPrompt);
     }
 
     [Fact]
-    public void OnAppInstalled_UpdatesState()
+    public async Task OnAppInstalled_UpdatesState()
     {
         // Arrange
         _jsMock.Setup(x => x.InvokeAsync<JsonElement>("mathilda.pwa.getPlatformInfo", It.IsAny<object[]>()))
             .ReturnsAsync(JsonSerializer.Deserialize<JsonElement>("{\"platform\":\"DesktopChromium\",\"isStandalone\":false,\"canInstall\":true,\"userAgent\":\"test\"}"));
-        _service.InitializeAsync().Wait();
+        await _service.InitializeAsync();
 
         // Act
         _service.GetType().GetMethod("OnAppInstalled", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)?

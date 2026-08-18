@@ -4,6 +4,7 @@ using Microsoft.JSInterop;
 using Moq;
 using Mathilda.Components;
 using Mathilda.Models;
+using Mathilda.Services;
 using Xunit;
 
 namespace Mathilda.Tests.Components;
@@ -16,6 +17,9 @@ public class LocationPromptModalTests : TestContext
     {
         _jsMock = new Mock<IJSRuntime>();
         Services.AddSingleton(_jsMock.Object);
+        Services.AddScoped<LocalStore>();
+        // LocationService is now a dependency of the modal (OBJ-01).
+        Services.AddScoped<LocationService>();
     }
 
     [Fact]
@@ -43,7 +47,7 @@ public class LocationPromptModalTests : TestContext
     }
 
     [Fact]
-    public async Task ConfirmFallback_ClosesModalAndUsesBangkok()
+    public async Task ConfirmFallback_ClosesModalAndUsesProvince()
     {
         var cut = RenderComponent<LocationPromptModal>();
         var reveal = cut.FindAll("button").First(b => b.TextContent.Contains("Choose a City Instead"));

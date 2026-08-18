@@ -8,10 +8,11 @@ namespace Mathilda.Services;
 /// Manages PWA installation lifecycle, prompt triggering, dismissal tracking,
 /// and platform detection via JSInterop.
 /// </summary>
-public sealed class InstallPromptService
+public sealed class InstallPromptService : IDisposable
 {
     private readonly IJSRuntime _js;
     private readonly AppSettingsService? _settings;
+    private DotNetObjectReference<InstallPromptService>? _dotNetRef;
 
     // State
     private PlatformInfo _platformInfo = new("Unknown", false, false);
@@ -44,7 +45,19 @@ public sealed class InstallPromptService
         if (_settings != null)
         {
             var settings = await _settings.LoadAsync();
-            _installPromptDismissed = settings.ShowInstallPrompt == false; // Reusing ShowInstallPrompt as "don't show again"
+            _installPromptDismissed = settings.ShowInstallPrompt == false; // ShowInstallPrompt == false means "don't show again"
+        }
+
+        // Register a permanent, typed JS callback bridge (replaces the old eval-based one).
+        _dotNetRef = DotNetObjectReference.Create(this);
+        try
+        {
+            await _js.InvokeVoidAsync("mathilda.pwa.registerCallbacks", _dotNetRef);
+        }
+        catch (Exception ex)
+        {
+            // Non-fatal: platform detection still works via getPlatformInfo below.
+            Console.WriteLine($"[InstallPromptService] Failed to register JS callbacks: {ex.Message}");
         }
 
         // Get platform info from JS
@@ -63,24 +76,6 @@ public sealed class InstallPromptService
             Console.WriteLine($"[InstallPromptService] Failed to get platform info: {ex.Message}");
             // Fallback: basic detection
             _platformInfo = new PlatformInfo("Unknown", false, false);
-        }
-
-        // Set up JS callbacks
-        try
-        {
-            var dotNetRef = DotNetObjectReference.Create(this);
-            await _js.InvokeVoidAsync("eval", $@"
-                window.mathilda.onInstallPromptReady = function(info) {{
-                    {dotNetRef}.invokeMethodAsync('OnInstallPromptReady', info);
-                }};
-                window.mathilda.onAppInstalled = function() {{
-                    {dotNetRef}.invokeMethodAsync('OnAppInstalled');
-                }};
-            ");
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"[InstallPromptService] Failed to set up JS callbacks: {ex.Message}");
         }
 
         _initialized = true;
@@ -126,7 +121,7 @@ public sealed class InstallPromptService
             var result = await _js.InvokeAsync<JsonElement>("mathilda.pwa.promptInstall");
             var success = result.GetProperty("success").GetBoolean();
             OnInstallCompleted?.Invoke(success);
-            
+
             if (!success)
             {
                 var reason = result.GetProperty("reason").GetString();
@@ -140,7 +135,7 @@ public sealed class InstallPromptService
                 _platformInfo = _platformInfo with { IsStandalone = true, CanInstall = false };
                 OnPlatformInfoChanged?.Invoke(_platformInfo);
             }
-            
+
             return success;
         }
         catch (Exception ex)
@@ -158,7 +153,7 @@ public sealed class InstallPromptService
         _installPromptDismissed = true;
         if (_settings != null)
         {
-            await _settings.UpdateSettingAsync("ShowInstallPrompt", false);
+            await _settings.SetShowInstallPromptAsync(false);
         }
         OnInstallCompleted?.Invoke(false);
     }
@@ -171,7 +166,7 @@ public sealed class InstallPromptService
         _installPromptDismissed = false;
         if (_settings != null)
         {
-            await _settings.UpdateSettingAsync("ShowInstallPrompt", true);
+            await _settings.SetShowInstallPromptAsync(true);
         }
     }
 
@@ -185,5 +180,14 @@ public sealed class InstallPromptService
             return await _settings.LoadAsync();
         }
         return new AppSettings { ShowInstallPrompt = true };
+    }
+
+    /// <summary>
+    /// Releases the JS object reference so the callback bridge can be collected.
+    /// </summary>
+    public void Dispose()
+    {
+        _dotNetRef?.Dispose();
+        _dotNetRef = null;
     }
 }

@@ -1,0 +1,300 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TestRun id="188639d4-91bd-4e63-b5d6-dd676302f8d2" name="@ewaldt-N95 2026-08-18 03:46:12" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2026-08-18T03:46:12.5263762+07:00" queuing="2026-08-18T03:46:12.5263763+07:00" start="2026-08-18T03:46:09.8473368+07:00" finish="2026-08-18T03:46:14.7571521+07:00" />
+  <TestSettings name="default" id="f461fc0e-137d-44b0-b430-5d4a7117ce72">
+    <Deployment runDeploymentRoot="_ewaldt-N95_2026-08-18_03_46_12" />
+  </TestSettings>
+  <Results>
+    <UnitTestResult executionId="6934647b-6609-4664-903b-ef9503a71d1e" testId="4f47fdd2-c311-d5a8-668b-ec04c52caa10" testName="Mathilda.Tests.Components.InstallWizardModalTests.Render_WhenIOSPlatform_ShowsIOSGuide" computerName="ewaldt-N95" duration="00:00:01.0141309" startTime="2026-08-18T03:46:14.4880656+07:00" endTime="2026-08-18T03:46:14.4880657+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="6934647b-6609-4664-903b-ef9503a71d1e">
+      <Output>
+        <ErrorInfo>
+          <Message>Bunit.Extensions.WaitForHelpers.WaitForFailedException : The CSS selector did not result in any matching element(s) before the timeout period passed. Check count: 2. Component render count: 2. Total render count: 2.</Message>
+          <StackTrace>   at Bunit.RenderedFragmentWaitForHelperExtensions.WaitForElementsCore(IRenderedFragment renderedFragment, String cssSelector, Nullable`1 matchElementCount, Nullable`1 timeout) in /_/src/bunit.web/Extensions/WaitForHelpers/RenderedFragmentWaitForHelperExtensions.cs:line 188
+   at Bunit.RenderedFragmentWaitForHelperExtensions.WaitForElements(IRenderedFragment renderedFragment, String cssSelector) in /_/src/bunit.web/Extensions/WaitForHelpers/RenderedFragmentWaitForHelperExtensions.cs:line 44
+   at Mathilda.Tests.Components.InstallWizardModalTests.Render_WhenIOSPlatform_ShowsIOSGuide() in /home/ewaldt/Documents/VS/Other/Mathilda/tests/Mathilda/Components/InstallWizardModalTests.cs:line 65
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="aa5c2202-00d8-46d3-b7ab-b879502ca639" testId="b4c17cbd-4fc2-1b32-388f-450f9cdad641" testName="Mathilda.Tests.Services.InstallPromptServiceTests.ResetDismissalAsync_ClearsPreference" computerName="ewaldt-N95" duration="00:00:00.0010000" startTime="2026-08-18T03:46:12.3525240+07:00" endTime="2026-08-18T03:46:12.3525240+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="aa5c2202-00d8-46d3-b7ab-b879502ca639">
+      <Output>
+        <ErrorInfo>
+          <Message>System.ArgumentException : Invalid callback. Setup on method with 2 parameter(s) cannot invoke callback with different number of parameters (1).</Message>
+          <StackTrace>   at Moq.MethodCall.ValidateNumberOfCallbackParameters(Delegate callback, MethodInfo callbackMethod) in /_/src/Moq/MethodCall.cs:line 538
+   at Moq.MethodCall.&lt;&gt;c__DisplayClass23_0.&lt;SetReturnComputedValueBehavior&gt;g__ValidateCallback|4(Delegate callback) in /_/src/Moq/MethodCall.cs:line 410
+   at Moq.MethodCall.SetReturnComputedValueBehavior(Delegate valueFactory) in /_/src/Moq/MethodCall.cs:line 380
+   at Moq.Language.Flow.NonVoidSetupPhrase`2.Returns[T1](Func`2 valueExpression) in /_/src/Moq/Language/Flow/NonVoidSetupPhrase.cs:line 301
+   at Moq.GeneratedReturnsExtensions.ReturnsAsync[T,TMock,TResult](IReturns`2 mock, Func`2 valueFunction)
+   at Mathilda.Tests.Services.InstallPromptServiceTests..ctor() in /home/ewaldt/Documents/VS/Other/Mathilda/tests/Mathilda/Services/InstallPromptServiceTests.cs:line 24
+   at System.RuntimeType.CreateInstanceDefaultCtor(Boolean publicOnly, Boolean wrapExceptions)</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="02280cbc-0654-40fa-be29-074cb227b4b6" testId="cd86c0ad-3600-bb07-db9d-95b9f4b32483" testName="Mathilda.Tests.Components.InstallWizardModalTests.Render_WhenDismissed_DoesNotShowModal" computerName="ewaldt-N95" duration="00:00:00.0418607" startTime="2026-08-18T03:46:13.2433834+07:00" endTime="2026-08-18T03:46:13.2433835+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="02280cbc-0654-40fa-be29-074cb227b4b6" />
+    <UnitTestResult executionId="47bb20c1-3eaf-4602-9787-99e735fd521a" testId="3b5094ef-0350-7f17-e75d-473024a47aa9" testName="Mathilda.Tests.Services.PlacesServiceTests.FetchNearby_NoConvex_ReturnsMockThree" computerName="ewaldt-N95" duration="00:00:00.0080131" startTime="2026-08-18T03:46:12.4116932+07:00" endTime="2026-08-18T03:46:12.4116933+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="47bb20c1-3eaf-4602-9787-99e735fd521a" />
+    <UnitTestResult executionId="44b3489b-e287-46fd-996a-3c2f2ee5d157" testId="a920b6cb-a67a-25f3-ed65-0f73fdcb6e0f" testName="Mathilda.Tests.Services.InstallPromptServiceTests.DismissInstallPromptAsync_PersistsPreference" computerName="ewaldt-N95" duration="00:00:00.0010000" startTime="2026-08-18T03:46:12.1257252+07:00" endTime="2026-08-18T03:46:12.1257252+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="44b3489b-e287-46fd-996a-3c2f2ee5d157">
+      <Output>
+        <ErrorInfo>
+          <Message>System.ArgumentException : Invalid callback. Setup on method with 2 parameter(s) cannot invoke callback with different number of parameters (1).</Message>
+          <StackTrace>   at Moq.MethodCall.ValidateNumberOfCallbackParameters(Delegate callback, MethodInfo callbackMethod) in /_/src/Moq/MethodCall.cs:line 538
+   at Moq.MethodCall.&lt;&gt;c__DisplayClass23_0.&lt;SetReturnComputedValueBehavior&gt;g__ValidateCallback|4(Delegate callback) in /_/src/Moq/MethodCall.cs:line 410
+   at Moq.MethodCall.SetReturnComputedValueBehavior(Delegate valueFactory) in /_/src/Moq/MethodCall.cs:line 380
+   at Moq.Language.Flow.NonVoidSetupPhrase`2.Returns[T1](Func`2 valueExpression) in /_/src/Moq/Language/Flow/NonVoidSetupPhrase.cs:line 301
+   at Moq.GeneratedReturnsExtensions.ReturnsAsync[T,TMock,TResult](IReturns`2 mock, Func`2 valueFunction)
+   at Mathilda.Tests.Services.InstallPromptServiceTests..ctor() in /home/ewaldt/Documents/VS/Other/Mathilda/tests/Mathilda/Services/InstallPromptServiceTests.cs:line 24
+   at System.RuntimeType.CreateInstanceDefaultCtor(Boolean publicOnly, Boolean wrapExceptions)</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="9c0b7465-ec7e-48bb-9e90-22f067c1fa72" testId="758554c5-7127-7fff-e710-82651b674e56" testName="Mathilda.Tests.Pages.OctagonDashboardTests.Renders_Eight_Tiles" computerName="ewaldt-N95" duration="00:00:00.3170233" startTime="2026-08-18T03:46:13.5048491+07:00" endTime="2026-08-18T03:46:13.5048492+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="9c0b7465-ec7e-48bb-9e90-22f067c1fa72" />
+    <UnitTestResult executionId="ad5262a9-3ba3-45de-af05-057d72b83db3" testId="9c1e0e4e-2049-f2a1-cabc-c91270b7195e" testName="Mathilda.Tests.Pages.OctagonDashboardTests.Renders_Title" computerName="ewaldt-N95" duration="00:00:01.5328099" startTime="2026-08-18T03:46:13.1917469+07:00" endTime="2026-08-18T03:46:13.1917470+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="ad5262a9-3ba3-45de-af05-057d72b83db3" />
+    <UnitTestResult executionId="7b2e1917-4dc4-4bf3-9e11-aaa0fddd5a72" testId="491ea467-532e-dc83-a794-740c3e111dec" testName="Mathilda.Tests.Pages.LocationTests.LocationPage_Acquired_ShowsCoordinates" computerName="ewaldt-N95" duration="00:00:00.0418996" startTime="2026-08-18T03:46:13.5690599+07:00" endTime="2026-08-18T03:46:13.5690600+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="7b2e1917-4dc4-4bf3-9e11-aaa0fddd5a72" />
+    <UnitTestResult executionId="b06fe99a-ac3d-43a6-824d-a9dd4f665c45" testId="bb7f9b57-04ef-e275-2873-55f61f27c818" testName="Mathilda.Tests.Services.ConvexClientTests.QueryAsync_NonSuccessStatus_ReturnsDefault" computerName="ewaldt-N95" duration="00:00:00.2399066" startTime="2026-08-18T03:46:12.3526745+07:00" endTime="2026-08-18T03:46:12.3526745+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="b06fe99a-ac3d-43a6-824d-a9dd4f665c45" />
+    <UnitTestResult executionId="2731adec-c6e3-4208-ad3c-bddabb23e820" testId="e0135e5d-ac8b-ae0f-0c3a-4d60c4ebaca8" testName="Mathilda.Tests.Models.AttractionTests.Ctor_SetsAllFields" computerName="ewaldt-N95" duration="00:00:00.0291360" startTime="2026-08-18T03:46:11.6532551+07:00" endTime="2026-08-18T03:46:11.6532552+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="2731adec-c6e3-4208-ad3c-bddabb23e820" />
+    <UnitTestResult executionId="425e936f-7f6e-4249-abf5-93dd9f917657" testId="921c1cee-b028-bb00-0a49-8d78c38bc19f" testName="Mathilda.Tests.Services.InstallPromptServiceTests.OnAppInstalled_UpdatesState" computerName="ewaldt-N95" duration="00:00:00.0010000" startTime="2026-08-18T03:46:12.3392942+07:00" endTime="2026-08-18T03:46:12.3392943+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="425e936f-7f6e-4249-abf5-93dd9f917657">
+      <Output>
+        <ErrorInfo>
+          <Message>System.ArgumentException : Invalid callback. Setup on method with 2 parameter(s) cannot invoke callback with different number of parameters (1).</Message>
+          <StackTrace>   at Moq.MethodCall.ValidateNumberOfCallbackParameters(Delegate callback, MethodInfo callbackMethod) in /_/src/Moq/MethodCall.cs:line 538
+   at Moq.MethodCall.&lt;&gt;c__DisplayClass23_0.&lt;SetReturnComputedValueBehavior&gt;g__ValidateCallback|4(Delegate callback) in /_/src/Moq/MethodCall.cs:line 410
+   at Moq.MethodCall.SetReturnComputedValueBehavior(Delegate valueFactory) in /_/src/Moq/MethodCall.cs:line 380
+   at Moq.Language.Flow.NonVoidSetupPhrase`2.Returns[T1](Func`2 valueExpression) in /_/src/Moq/Language/Flow/NonVoidSetupPhrase.cs:line 301
+   at Moq.GeneratedReturnsExtensions.ReturnsAsync[T,TMock,TResult](IReturns`2 mock, Func`2 valueFunction)
+   at Mathilda.Tests.Services.InstallPromptServiceTests..ctor() in /home/ewaldt/Documents/VS/Other/Mathilda/tests/Mathilda/Services/InstallPromptServiceTests.cs:line 24
+   at System.RuntimeType.CreateInstanceDefaultCtor(Boolean publicOnly, Boolean wrapExceptions)</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="f0b5e4f5-87ea-4966-b826-88c91cca1a45" testId="84dbc2ff-78c6-3358-3c27-4cb200eed22b" testName="Mathilda.Tests.Pages.LocationTests.LocationPage_Denied_ShowsUnavailable" computerName="ewaldt-N95" duration="00:00:01.9349297" startTime="2026-08-18T03:46:13.5253895+07:00" endTime="2026-08-18T03:46:13.5253896+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="f0b5e4f5-87ea-4966-b826-88c91cca1a45" />
+    <UnitTestResult executionId="bbff0e59-7bc3-4883-9999-7b56150b38ac" testId="8ff7cf18-1958-23a7-262f-8da143863b51" testName="Mathilda.Tests.Components.InstallWizardModalTests.Render_WhenStandalone_DoesNotShowModal" computerName="ewaldt-N95" duration="00:00:01.5389420" startTime="2026-08-18T03:46:13.1918471+07:00" endTime="2026-08-18T03:46:13.1918472+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="bbff0e59-7bc3-4883-9999-7b56150b38ac" />
+    <UnitTestResult executionId="c3e9ba6f-f3cd-4449-ab51-767ecc3ba793" testId="d0cd4171-0ea0-b557-1a23-966b8d8141cf" testName="Mathilda.Tests.Services.InstallPromptServiceTests.InitializeAsync_WhenStandalone_DoesNotShowPrompt" computerName="ewaldt-N95" duration="00:00:00.0010000" startTime="2026-08-18T03:46:12.3518044+07:00" endTime="2026-08-18T03:46:12.3518045+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="c3e9ba6f-f3cd-4449-ab51-767ecc3ba793">
+      <Output>
+        <ErrorInfo>
+          <Message>System.ArgumentException : Invalid callback. Setup on method with 2 parameter(s) cannot invoke callback with different number of parameters (1).</Message>
+          <StackTrace>   at Moq.MethodCall.ValidateNumberOfCallbackParameters(Delegate callback, MethodInfo callbackMethod) in /_/src/Moq/MethodCall.cs:line 538
+   at Moq.MethodCall.&lt;&gt;c__DisplayClass23_0.&lt;SetReturnComputedValueBehavior&gt;g__ValidateCallback|4(Delegate callback) in /_/src/Moq/MethodCall.cs:line 410
+   at Moq.MethodCall.SetReturnComputedValueBehavior(Delegate valueFactory) in /_/src/Moq/MethodCall.cs:line 380
+   at Moq.Language.Flow.NonVoidSetupPhrase`2.Returns[T1](Func`2 valueExpression) in /_/src/Moq/Language/Flow/NonVoidSetupPhrase.cs:line 301
+   at Moq.GeneratedReturnsExtensions.ReturnsAsync[T,TMock,TResult](IReturns`2 mock, Func`2 valueFunction)
+   at Mathilda.Tests.Services.InstallPromptServiceTests..ctor() in /home/ewaldt/Documents/VS/Other/Mathilda/tests/Mathilda/Services/InstallPromptServiceTests.cs:line 24
+   at System.RuntimeType.CreateInstanceDefaultCtor(Boolean publicOnly, Boolean wrapExceptions)</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="e0877f0b-8aca-41be-82b3-a5ebac16d732" testId="2ceff00e-f470-010e-8f4d-e6f34ffabadf" testName="Mathilda.Tests.Services.ConvexClientTests.MutationAsync_PostsToMutationEndpoint" computerName="ewaldt-N95" duration="00:00:00.0436782" startTime="2026-08-18T03:46:12.3864055+07:00" endTime="2026-08-18T03:46:12.3864056+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="e0877f0b-8aca-41be-82b3-a5ebac16d732" />
+    <UnitTestResult executionId="78eedf08-ec73-4d70-88e9-f54f55e64c36" testId="27bee753-9737-c6d1-eed0-8ec8ef5e0f73" testName="Mathilda.Tests.Services.WeatherServiceTests.Fetch_NoConvex_ReturnsMockSunny" computerName="ewaldt-N95" duration="00:00:00.0288926" startTime="2026-08-18T03:46:11.6595126+07:00" endTime="2026-08-18T03:46:11.6595127+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="78eedf08-ec73-4d70-88e9-f54f55e64c36" />
+    <UnitTestResult executionId="1ff9b348-b24f-452c-bee5-233136e45ac8" testId="5cb210bd-70fe-314f-062d-6662a4dc3cda" testName="Mathilda.Tests.Services.InstallPromptServiceTests.InitializeAsync_LoadsSettingsAndPlatformInfo" computerName="ewaldt-N95" duration="00:00:00.0010000" startTime="2026-08-18T03:46:12.1175354+07:00" endTime="2026-08-18T03:46:12.1175355+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="1ff9b348-b24f-452c-bee5-233136e45ac8">
+      <Output>
+        <ErrorInfo>
+          <Message>System.ArgumentException : Invalid callback. Setup on method with 2 parameter(s) cannot invoke callback with different number of parameters (1).</Message>
+          <StackTrace>   at Moq.MethodCall.ValidateNumberOfCallbackParameters(Delegate callback, MethodInfo callbackMethod) in /_/src/Moq/MethodCall.cs:line 538
+   at Moq.MethodCall.&lt;&gt;c__DisplayClass23_0.&lt;SetReturnComputedValueBehavior&gt;g__ValidateCallback|4(Delegate callback) in /_/src/Moq/MethodCall.cs:line 410
+   at Moq.MethodCall.SetReturnComputedValueBehavior(Delegate valueFactory) in /_/src/Moq/MethodCall.cs:line 380
+   at Moq.Language.Flow.NonVoidSetupPhrase`2.Returns[T1](Func`2 valueExpression) in /_/src/Moq/Language/Flow/NonVoidSetupPhrase.cs:line 301
+   at Moq.GeneratedReturnsExtensions.ReturnsAsync[T,TMock,TResult](IReturns`2 mock, Func`2 valueFunction)
+   at Mathilda.Tests.Services.InstallPromptServiceTests..ctor() in /home/ewaldt/Documents/VS/Other/Mathilda/tests/Mathilda/Services/InstallPromptServiceTests.cs:line 24
+   at System.RuntimeType.CreateInstanceDefaultCtor(Boolean publicOnly, Boolean wrapExceptions)</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="f2286439-5bbe-4e30-9df5-7eed1586ca6b" testId="f250c9b2-8d04-96ac-6ea9-24cbc5aad5e4" testName="Mathilda.Tests.Models.TripCostEntryTests.Total_EqualsAmount" computerName="ewaldt-N95" duration="00:00:00.0275908" startTime="2026-08-18T03:46:11.6314720+07:00" endTime="2026-08-18T03:46:11.6315176+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="f2286439-5bbe-4e30-9df5-7eed1586ca6b" />
+    <UnitTestResult executionId="56a90b8d-5499-4085-86b7-cc100281ea53" testId="7ce04ec3-c6dc-2858-220b-46a7f3038ba1" testName="Mathilda.Tests.Models.WeatherSnapshotTests.Ctor_HoldsValues" computerName="ewaldt-N95" duration="00:00:00.0120086" startTime="2026-08-18T03:46:11.6598159+07:00" endTime="2026-08-18T03:46:11.6598160+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="56a90b8d-5499-4085-86b7-cc100281ea53" />
+    <UnitTestResult executionId="a25621db-f34e-4335-be63-ee56932cb05b" testId="6e6b5f88-e84f-05d1-7516-2dbf980a8b91" testName="Mathilda.Tests.Services.ConvexClientTests.QueryAsync_DeserializesEnvelopeToList" computerName="ewaldt-N95" duration="00:00:00.0156049" startTime="2026-08-18T03:46:12.3998008+07:00" endTime="2026-08-18T03:46:12.3998008+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="a25621db-f34e-4335-be63-ee56932cb05b" />
+    <UnitTestResult executionId="b018e9b6-0257-474d-800f-04f1e8748701" testId="df78c847-ecba-3da7-49ce-2a692fcdea43" testName="Mathilda.Tests.Components.InstallWizardModalTests.Render_WhenInstallPromptAvailable_ShowsModal" computerName="ewaldt-N95" duration="00:00:00.2157268" startTime="2026-08-18T03:46:13.4583808+07:00" endTime="2026-08-18T03:46:13.4583809+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="b018e9b6-0257-474d-800f-04f1e8748701" />
+  </Results>
+  <TestDefinitions>
+    <UnitTest name="Mathilda.Tests.Models.AttractionTests.Ctor_SetsAllFields" storage="/home/ewaldt/documents/vs/other/mathilda/tests/mathilda/bin/debug/net8.0/mathilda.tests.dll" id="e0135e5d-ac8b-ae0f-0c3a-4d60c4ebaca8">
+      <Execution id="2731adec-c6e3-4208-ad3c-bddabb23e820" />
+      <TestMethod codeBase="/home/ewaldt/Documents/VS/Other/Mathilda/tests/Mathilda/bin/Debug/net8.0/Mathilda.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Mathilda.Tests.Models.AttractionTests" name="Ctor_SetsAllFields" />
+    </UnitTest>
+    <UnitTest name="Mathilda.Tests.Services.ConvexClientTests.MutationAsync_PostsToMutationEndpoint" storage="/home/ewaldt/documents/vs/other/mathilda/tests/mathilda/bin/debug/net8.0/mathilda.tests.dll" id="2ceff00e-f470-010e-8f4d-e6f34ffabadf">
+      <Execution id="e0877f0b-8aca-41be-82b3-a5ebac16d732" />
+      <TestMethod codeBase="/home/ewaldt/Documents/VS/Other/Mathilda/tests/Mathilda/bin/Debug/net8.0/Mathilda.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Mathilda.Tests.Services.ConvexClientTests" name="MutationAsync_PostsToMutationEndpoint" />
+    </UnitTest>
+    <UnitTest name="Mathilda.Tests.Services.ConvexClientTests.QueryAsync_NonSuccessStatus_ReturnsDefault" storage="/home/ewaldt/documents/vs/other/mathilda/tests/mathilda/bin/debug/net8.0/mathilda.tests.dll" id="bb7f9b57-04ef-e275-2873-55f61f27c818">
+      <Execution id="b06fe99a-ac3d-43a6-824d-a9dd4f665c45" />
+      <TestMethod codeBase="/home/ewaldt/Documents/VS/Other/Mathilda/tests/Mathilda/bin/Debug/net8.0/Mathilda.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Mathilda.Tests.Services.ConvexClientTests" name="QueryAsync_NonSuccessStatus_ReturnsDefault" />
+    </UnitTest>
+    <UnitTest name="Mathilda.Tests.Components.InstallWizardModalTests.Render_WhenInstallPromptAvailable_ShowsModal" storage="/home/ewaldt/documents/vs/other/mathilda/tests/mathilda/bin/debug/net8.0/mathilda.tests.dll" id="df78c847-ecba-3da7-49ce-2a692fcdea43">
+      <Execution id="b018e9b6-0257-474d-800f-04f1e8748701" />
+      <TestMethod codeBase="/home/ewaldt/Documents/VS/Other/Mathilda/tests/Mathilda/bin/Debug/net8.0/Mathilda.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Mathilda.Tests.Components.InstallWizardModalTests" name="Render_WhenInstallPromptAvailable_ShowsModal" />
+    </UnitTest>
+    <UnitTest name="Mathilda.Tests.Services.InstallPromptServiceTests.DismissInstallPromptAsync_PersistsPreference" storage="/home/ewaldt/documents/vs/other/mathilda/tests/mathilda/bin/debug/net8.0/mathilda.tests.dll" id="a920b6cb-a67a-25f3-ed65-0f73fdcb6e0f">
+      <Execution id="44b3489b-e287-46fd-996a-3c2f2ee5d157" />
+      <TestMethod codeBase="/home/ewaldt/Documents/VS/Other/Mathilda/tests/Mathilda/bin/Debug/net8.0/Mathilda.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Mathilda.Tests.Services.InstallPromptServiceTests" name="DismissInstallPromptAsync_PersistsPreference" />
+    </UnitTest>
+    <UnitTest name="Mathilda.Tests.Pages.OctagonDashboardTests.Renders_Eight_Tiles" storage="/home/ewaldt/documents/vs/other/mathilda/tests/mathilda/bin/debug/net8.0/mathilda.tests.dll" id="758554c5-7127-7fff-e710-82651b674e56">
+      <Execution id="9c0b7465-ec7e-48bb-9e90-22f067c1fa72" />
+      <TestMethod codeBase="/home/ewaldt/Documents/VS/Other/Mathilda/tests/Mathilda/bin/Debug/net8.0/Mathilda.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Mathilda.Tests.Pages.OctagonDashboardTests" name="Renders_Eight_Tiles" />
+    </UnitTest>
+    <UnitTest name="Mathilda.Tests.Services.InstallPromptServiceTests.InitializeAsync_LoadsSettingsAndPlatformInfo" storage="/home/ewaldt/documents/vs/other/mathilda/tests/mathilda/bin/debug/net8.0/mathilda.tests.dll" id="5cb210bd-70fe-314f-062d-6662a4dc3cda">
+      <Execution id="1ff9b348-b24f-452c-bee5-233136e45ac8" />
+      <TestMethod codeBase="/home/ewaldt/Documents/VS/Other/Mathilda/tests/Mathilda/bin/Debug/net8.0/Mathilda.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Mathilda.Tests.Services.InstallPromptServiceTests" name="InitializeAsync_LoadsSettingsAndPlatformInfo" />
+    </UnitTest>
+    <UnitTest name="Mathilda.Tests.Pages.LocationTests.LocationPage_Acquired_ShowsCoordinates" storage="/home/ewaldt/documents/vs/other/mathilda/tests/mathilda/bin/debug/net8.0/mathilda.tests.dll" id="491ea467-532e-dc83-a794-740c3e111dec">
+      <Execution id="7b2e1917-4dc4-4bf3-9e11-aaa0fddd5a72" />
+      <TestMethod codeBase="/home/ewaldt/Documents/VS/Other/Mathilda/tests/Mathilda/bin/Debug/net8.0/Mathilda.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Mathilda.Tests.Pages.LocationTests" name="LocationPage_Acquired_ShowsCoordinates" />
+    </UnitTest>
+    <UnitTest name="Mathilda.Tests.Models.WeatherSnapshotTests.Ctor_HoldsValues" storage="/home/ewaldt/documents/vs/other/mathilda/tests/mathilda/bin/debug/net8.0/mathilda.tests.dll" id="7ce04ec3-c6dc-2858-220b-46a7f3038ba1">
+      <Execution id="56a90b8d-5499-4085-86b7-cc100281ea53" />
+      <TestMethod codeBase="/home/ewaldt/Documents/VS/Other/Mathilda/tests/Mathilda/bin/Debug/net8.0/Mathilda.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Mathilda.Tests.Models.WeatherSnapshotTests" name="Ctor_HoldsValues" />
+    </UnitTest>
+    <UnitTest name="Mathilda.Tests.Components.InstallWizardModalTests.Render_WhenIOSPlatform_ShowsIOSGuide" storage="/home/ewaldt/documents/vs/other/mathilda/tests/mathilda/bin/debug/net8.0/mathilda.tests.dll" id="4f47fdd2-c311-d5a8-668b-ec04c52caa10">
+      <Execution id="6934647b-6609-4664-903b-ef9503a71d1e" />
+      <TestMethod codeBase="/home/ewaldt/Documents/VS/Other/Mathilda/tests/Mathilda/bin/Debug/net8.0/Mathilda.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Mathilda.Tests.Components.InstallWizardModalTests" name="Render_WhenIOSPlatform_ShowsIOSGuide" />
+    </UnitTest>
+    <UnitTest name="Mathilda.Tests.Pages.LocationTests.LocationPage_Denied_ShowsUnavailable" storage="/home/ewaldt/documents/vs/other/mathilda/tests/mathilda/bin/debug/net8.0/mathilda.tests.dll" id="84dbc2ff-78c6-3358-3c27-4cb200eed22b">
+      <Execution id="f0b5e4f5-87ea-4966-b826-88c91cca1a45" />
+      <TestMethod codeBase="/home/ewaldt/Documents/VS/Other/Mathilda/tests/Mathilda/bin/Debug/net8.0/Mathilda.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Mathilda.Tests.Pages.LocationTests" name="LocationPage_Denied_ShowsUnavailable" />
+    </UnitTest>
+    <UnitTest name="Mathilda.Tests.Services.WeatherServiceTests.Fetch_NoConvex_ReturnsMockSunny" storage="/home/ewaldt/documents/vs/other/mathilda/tests/mathilda/bin/debug/net8.0/mathilda.tests.dll" id="27bee753-9737-c6d1-eed0-8ec8ef5e0f73">
+      <Execution id="78eedf08-ec73-4d70-88e9-f54f55e64c36" />
+      <TestMethod codeBase="/home/ewaldt/Documents/VS/Other/Mathilda/tests/Mathilda/bin/Debug/net8.0/Mathilda.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Mathilda.Tests.Services.WeatherServiceTests" name="Fetch_NoConvex_ReturnsMockSunny" />
+    </UnitTest>
+    <UnitTest name="Mathilda.Tests.Components.InstallWizardModalTests.Render_WhenDismissed_DoesNotShowModal" storage="/home/ewaldt/documents/vs/other/mathilda/tests/mathilda/bin/debug/net8.0/mathilda.tests.dll" id="cd86c0ad-3600-bb07-db9d-95b9f4b32483">
+      <Execution id="02280cbc-0654-40fa-be29-074cb227b4b6" />
+      <TestMethod codeBase="/home/ewaldt/Documents/VS/Other/Mathilda/tests/Mathilda/bin/Debug/net8.0/Mathilda.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Mathilda.Tests.Components.InstallWizardModalTests" name="Render_WhenDismissed_DoesNotShowModal" />
+    </UnitTest>
+    <UnitTest name="Mathilda.Tests.Services.InstallPromptServiceTests.ResetDismissalAsync_ClearsPreference" storage="/home/ewaldt/documents/vs/other/mathilda/tests/mathilda/bin/debug/net8.0/mathilda.tests.dll" id="b4c17cbd-4fc2-1b32-388f-450f9cdad641">
+      <Execution id="aa5c2202-00d8-46d3-b7ab-b879502ca639" />
+      <TestMethod codeBase="/home/ewaldt/Documents/VS/Other/Mathilda/tests/Mathilda/bin/Debug/net8.0/Mathilda.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Mathilda.Tests.Services.InstallPromptServiceTests" name="ResetDismissalAsync_ClearsPreference" />
+    </UnitTest>
+    <UnitTest name="Mathilda.Tests.Services.ConvexClientTests.QueryAsync_DeserializesEnvelopeToList" storage="/home/ewaldt/documents/vs/other/mathilda/tests/mathilda/bin/debug/net8.0/mathilda.tests.dll" id="6e6b5f88-e84f-05d1-7516-2dbf980a8b91">
+      <Execution id="a25621db-f34e-4335-be63-ee56932cb05b" />
+      <TestMethod codeBase="/home/ewaldt/Documents/VS/Other/Mathilda/tests/Mathilda/bin/Debug/net8.0/Mathilda.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Mathilda.Tests.Services.ConvexClientTests" name="QueryAsync_DeserializesEnvelopeToList" />
+    </UnitTest>
+    <UnitTest name="Mathilda.Tests.Components.InstallWizardModalTests.Render_WhenStandalone_DoesNotShowModal" storage="/home/ewaldt/documents/vs/other/mathilda/tests/mathilda/bin/debug/net8.0/mathilda.tests.dll" id="8ff7cf18-1958-23a7-262f-8da143863b51">
+      <Execution id="bbff0e59-7bc3-4883-9999-7b56150b38ac" />
+      <TestMethod codeBase="/home/ewaldt/Documents/VS/Other/Mathilda/tests/Mathilda/bin/Debug/net8.0/Mathilda.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Mathilda.Tests.Components.InstallWizardModalTests" name="Render_WhenStandalone_DoesNotShowModal" />
+    </UnitTest>
+    <UnitTest name="Mathilda.Tests.Services.PlacesServiceTests.FetchNearby_NoConvex_ReturnsMockThree" storage="/home/ewaldt/documents/vs/other/mathilda/tests/mathilda/bin/debug/net8.0/mathilda.tests.dll" id="3b5094ef-0350-7f17-e75d-473024a47aa9">
+      <Execution id="47bb20c1-3eaf-4602-9787-99e735fd521a" />
+      <TestMethod codeBase="/home/ewaldt/Documents/VS/Other/Mathilda/tests/Mathilda/bin/Debug/net8.0/Mathilda.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Mathilda.Tests.Services.PlacesServiceTests" name="FetchNearby_NoConvex_ReturnsMockThree" />
+    </UnitTest>
+    <UnitTest name="Mathilda.Tests.Services.InstallPromptServiceTests.OnAppInstalled_UpdatesState" storage="/home/ewaldt/documents/vs/other/mathilda/tests/mathilda/bin/debug/net8.0/mathilda.tests.dll" id="921c1cee-b028-bb00-0a49-8d78c38bc19f">
+      <Execution id="425e936f-7f6e-4249-abf5-93dd9f917657" />
+      <TestMethod codeBase="/home/ewaldt/Documents/VS/Other/Mathilda/tests/Mathilda/bin/Debug/net8.0/Mathilda.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Mathilda.Tests.Services.InstallPromptServiceTests" name="OnAppInstalled_UpdatesState" />
+    </UnitTest>
+    <UnitTest name="Mathilda.Tests.Models.TripCostEntryTests.Total_EqualsAmount" storage="/home/ewaldt/documents/vs/other/mathilda/tests/mathilda/bin/debug/net8.0/mathilda.tests.dll" id="f250c9b2-8d04-96ac-6ea9-24cbc5aad5e4">
+      <Execution id="f2286439-5bbe-4e30-9df5-7eed1586ca6b" />
+      <TestMethod codeBase="/home/ewaldt/Documents/VS/Other/Mathilda/tests/Mathilda/bin/Debug/net8.0/Mathilda.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Mathilda.Tests.Models.TripCostEntryTests" name="Total_EqualsAmount" />
+    </UnitTest>
+    <UnitTest name="Mathilda.Tests.Services.InstallPromptServiceTests.InitializeAsync_WhenStandalone_DoesNotShowPrompt" storage="/home/ewaldt/documents/vs/other/mathilda/tests/mathilda/bin/debug/net8.0/mathilda.tests.dll" id="d0cd4171-0ea0-b557-1a23-966b8d8141cf">
+      <Execution id="c3e9ba6f-f3cd-4449-ab51-767ecc3ba793" />
+      <TestMethod codeBase="/home/ewaldt/Documents/VS/Other/Mathilda/tests/Mathilda/bin/Debug/net8.0/Mathilda.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Mathilda.Tests.Services.InstallPromptServiceTests" name="InitializeAsync_WhenStandalone_DoesNotShowPrompt" />
+    </UnitTest>
+    <UnitTest name="Mathilda.Tests.Pages.OctagonDashboardTests.Renders_Title" storage="/home/ewaldt/documents/vs/other/mathilda/tests/mathilda/bin/debug/net8.0/mathilda.tests.dll" id="9c1e0e4e-2049-f2a1-cabc-c91270b7195e">
+      <Execution id="ad5262a9-3ba3-45de-af05-057d72b83db3" />
+      <TestMethod codeBase="/home/ewaldt/Documents/VS/Other/Mathilda/tests/Mathilda/bin/Debug/net8.0/Mathilda.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Mathilda.Tests.Pages.OctagonDashboardTests" name="Renders_Title" />
+    </UnitTest>
+  </TestDefinitions>
+  <TestEntries>
+    <TestEntry testId="4f47fdd2-c311-d5a8-668b-ec04c52caa10" executionId="6934647b-6609-4664-903b-ef9503a71d1e" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="b4c17cbd-4fc2-1b32-388f-450f9cdad641" executionId="aa5c2202-00d8-46d3-b7ab-b879502ca639" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="cd86c0ad-3600-bb07-db9d-95b9f4b32483" executionId="02280cbc-0654-40fa-be29-074cb227b4b6" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="3b5094ef-0350-7f17-e75d-473024a47aa9" executionId="47bb20c1-3eaf-4602-9787-99e735fd521a" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="a920b6cb-a67a-25f3-ed65-0f73fdcb6e0f" executionId="44b3489b-e287-46fd-996a-3c2f2ee5d157" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="758554c5-7127-7fff-e710-82651b674e56" executionId="9c0b7465-ec7e-48bb-9e90-22f067c1fa72" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="9c1e0e4e-2049-f2a1-cabc-c91270b7195e" executionId="ad5262a9-3ba3-45de-af05-057d72b83db3" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="491ea467-532e-dc83-a794-740c3e111dec" executionId="7b2e1917-4dc4-4bf3-9e11-aaa0fddd5a72" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="bb7f9b57-04ef-e275-2873-55f61f27c818" executionId="b06fe99a-ac3d-43a6-824d-a9dd4f665c45" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="e0135e5d-ac8b-ae0f-0c3a-4d60c4ebaca8" executionId="2731adec-c6e3-4208-ad3c-bddabb23e820" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="921c1cee-b028-bb00-0a49-8d78c38bc19f" executionId="425e936f-7f6e-4249-abf5-93dd9f917657" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="84dbc2ff-78c6-3358-3c27-4cb200eed22b" executionId="f0b5e4f5-87ea-4966-b826-88c91cca1a45" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="8ff7cf18-1958-23a7-262f-8da143863b51" executionId="bbff0e59-7bc3-4883-9999-7b56150b38ac" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="d0cd4171-0ea0-b557-1a23-966b8d8141cf" executionId="c3e9ba6f-f3cd-4449-ab51-767ecc3ba793" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="2ceff00e-f470-010e-8f4d-e6f34ffabadf" executionId="e0877f0b-8aca-41be-82b3-a5ebac16d732" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="27bee753-9737-c6d1-eed0-8ec8ef5e0f73" executionId="78eedf08-ec73-4d70-88e9-f54f55e64c36" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="5cb210bd-70fe-314f-062d-6662a4dc3cda" executionId="1ff9b348-b24f-452c-bee5-233136e45ac8" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="f250c9b2-8d04-96ac-6ea9-24cbc5aad5e4" executionId="f2286439-5bbe-4e30-9df5-7eed1586ca6b" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="7ce04ec3-c6dc-2858-220b-46a7f3038ba1" executionId="56a90b8d-5499-4085-86b7-cc100281ea53" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="6e6b5f88-e84f-05d1-7516-2dbf980a8b91" executionId="a25621db-f34e-4335-be63-ee56932cb05b" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="df78c847-ecba-3da7-49ce-2a692fcdea43" executionId="b018e9b6-0257-474d-800f-04f1e8748701" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+  </TestEntries>
+  <TestLists>
+    <TestList name="Results Not in a List" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="All Loaded Results" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <ResultSummary outcome="Failed">
+    <Counters total="21" executed="21" passed="15" failed="6" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
+    <Output>
+      <StdOut>[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.5.6+bf9b858c26 (64-bit .NET 8.0.29)
+[xUnit.net 00:00:00.16]   Discovering: Mathilda.Tests
+[xUnit.net 00:00:00.26]   Discovered:  Mathilda.Tests
+[xUnit.net 00:00:00.26]   Starting:    Mathilda.Tests
+[xUnit.net 00:00:00.88]       System.ArgumentException : Invalid callback. Setup on method with 2 parameter(s) cannot invoke callback with different number of parameters (1).
+[xUnit.net 00:00:00.88]       Stack Trace:
+[xUnit.net 00:00:00.89]         /_/src/Moq/MethodCall.cs(538,0): at Moq.MethodCall.ValidateNumberOfCallbackParameters(Delegate callback, MethodInfo callbackMethod)
+[xUnit.net 00:00:00.89]         /_/src/Moq/MethodCall.cs(410,0): at Moq.MethodCall.&lt;&gt;c__DisplayClass23_0.&lt;SetReturnComputedValueBehavior&gt;g__ValidateCallback|4(Delegate callback)
+[xUnit.net 00:00:00.89]         /_/src/Moq/MethodCall.cs(380,0): at Moq.MethodCall.SetReturnComputedValueBehavior(Delegate valueFactory)
+[xUnit.net 00:00:00.89]         /_/src/Moq/Language/Flow/NonVoidSetupPhrase.cs(301,0): at Moq.Language.Flow.NonVoidSetupPhrase`2.Returns[T1](Func`2 valueExpression)
+[xUnit.net 00:00:00.89]            at Moq.GeneratedReturnsExtensions.ReturnsAsync[T,TMock,TResult](IReturns`2 mock, Func`2 valueFunction)
+[xUnit.net 00:00:00.89]         /home/ewaldt/Documents/VS/Other/Mathilda/tests/Mathilda/Services/InstallPromptServiceTests.cs(24,0): at Mathilda.Tests.Services.InstallPromptServiceTests..ctor()
+[xUnit.net 00:00:00.89]            at System.RuntimeType.CreateInstanceDefaultCtor(Boolean publicOnly, Boolean wrapExceptions)
+[xUnit.net 00:00:00.89]       System.ArgumentException : Invalid callback. Setup on method with 2 parameter(s) cannot invoke callback with different number of parameters (1).
+[xUnit.net 00:00:00.90]       Stack Trace:
+[xUnit.net 00:00:00.90]         /_/src/Moq/MethodCall.cs(538,0): at Moq.MethodCall.ValidateNumberOfCallbackParameters(Delegate callback, MethodInfo callbackMethod)
+[xUnit.net 00:00:00.90]         /_/src/Moq/MethodCall.cs(410,0): at Moq.MethodCall.&lt;&gt;c__DisplayClass23_0.&lt;SetReturnComputedValueBehavior&gt;g__ValidateCallback|4(Delegate callback)
+[xUnit.net 00:00:00.90]         /_/src/Moq/MethodCall.cs(380,0): at Moq.MethodCall.SetReturnComputedValueBehavior(Delegate valueFactory)
+[xUnit.net 00:00:00.90]         /_/src/Moq/Language/Flow/NonVoidSetupPhrase.cs(301,0): at Moq.Language.Flow.NonVoidSetupPhrase`2.Returns[T1](Func`2 valueExpression)
+[xUnit.net 00:00:00.90]            at Moq.GeneratedReturnsExtensions.ReturnsAsync[T,TMock,TResult](IReturns`2 mock, Func`2 valueFunction)
+[xUnit.net 00:00:00.90]         /home/ewaldt/Documents/VS/Other/Mathilda/tests/Mathilda/Services/InstallPromptServiceTests.cs(24,0): at Mathilda.Tests.Services.InstallPromptServiceTests..ctor()
+[xUnit.net 00:00:00.90]            at System.RuntimeType.CreateInstanceDefaultCtor(Boolean publicOnly, Boolean wrapExceptions)
+[xUnit.net 00:00:01.12]       System.ArgumentException : Invalid callback. Setup on method with 2 parameter(s) cannot invoke callback with different number of parameters (1).
+[xUnit.net 00:00:01.12]       Stack Trace:
+[xUnit.net 00:00:01.12]         /_/src/Moq/MethodCall.cs(538,0): at Moq.MethodCall.ValidateNumberOfCallbackParameters(Delegate callback, MethodInfo callbackMethod)
+[xUnit.net 00:00:01.12]         /_/src/Moq/MethodCall.cs(410,0): at Moq.MethodCall.&lt;&gt;c__DisplayClass23_0.&lt;SetReturnComputedValueBehavior&gt;g__ValidateCallback|4(Delegate callback)
+[xUnit.net 00:00:01.12]         /_/src/Moq/MethodCall.cs(380,0): at Moq.MethodCall.SetReturnComputedValueBehavior(Delegate valueFactory)
+[xUnit.net 00:00:01.12]         /_/src/Moq/Language/Flow/NonVoidSetupPhrase.cs(301,0): at Moq.Language.Flow.NonVoidSetupPhrase`2.Returns[T1](Func`2 valueExpression)
+[xUnit.net 00:00:01.12]            at Moq.GeneratedReturnsExtensions.ReturnsAsync[T,TMock,TResult](IReturns`2 mock, Func`2 valueFunction)
+[xUnit.net 00:00:01.12]         /home/ewaldt/Documents/VS/Other/Mathilda/tests/Mathilda/Services/InstallPromptServiceTests.cs(24,0): at Mathilda.Tests.Services.InstallPromptServiceTests..ctor()
+[xUnit.net 00:00:01.12]            at System.RuntimeType.CreateInstanceDefaultCtor(Boolean publicOnly, Boolean wrapExceptions)
+[xUnit.net 00:00:01.13]       System.ArgumentException : Invalid callback. Setup on method with 2 parameter(s) cannot invoke callback with different number of parameters (1).
+[xUnit.net 00:00:01.13]       Stack Trace:
+[xUnit.net 00:00:01.13]         /_/src/Moq/MethodCall.cs(538,0): at Moq.MethodCall.ValidateNumberOfCallbackParameters(Delegate callback, MethodInfo callbackMethod)
+[xUnit.net 00:00:01.13]         /_/src/Moq/MethodCall.cs(410,0): at Moq.MethodCall.&lt;&gt;c__DisplayClass23_0.&lt;SetReturnComputedValueBehavior&gt;g__ValidateCallback|4(Delegate callback)
+[xUnit.net 00:00:01.13]         /_/src/Moq/MethodCall.cs(380,0): at Moq.MethodCall.SetReturnComputedValueBehavior(Delegate valueFactory)
+[xUnit.net 00:00:01.13]         /_/src/Moq/Language/Flow/NonVoidSetupPhrase.cs(301,0): at Moq.Language.Flow.NonVoidSetupPhrase`2.Returns[T1](Func`2 valueExpression)
+[xUnit.net 00:00:01.13]            at Moq.GeneratedReturnsExtensions.ReturnsAsync[T,TMock,TResult](IReturns`2 mock, Func`2 valueFunction)
+[xUnit.net 00:00:01.13]         /home/ewaldt/Documents/VS/Other/Mathilda/tests/Mathilda/Services/InstallPromptServiceTests.cs(24,0): at Mathilda.Tests.Services.InstallPromptServiceTests..ctor()
+[xUnit.net 00:00:01.13]            at System.RuntimeType.CreateInstanceDefaultCtor(Boolean publicOnly, Boolean wrapExceptions)
+[xUnit.net 00:00:01.13]       System.ArgumentException : Invalid callback. Setup on method with 2 parameter(s) cannot invoke callback with different number of parameters (1).
+[xUnit.net 00:00:01.13]       Stack Trace:
+[xUnit.net 00:00:01.13]         /_/src/Moq/MethodCall.cs(538,0): at Moq.MethodCall.ValidateNumberOfCallbackParameters(Delegate callback, MethodInfo callbackMethod)
+[xUnit.net 00:00:01.13]         /_/src/Moq/MethodCall.cs(410,0): at Moq.MethodCall.&lt;&gt;c__DisplayClass23_0.&lt;SetReturnComputedValueBehavior&gt;g__ValidateCallback|4(Delegate callback)
+[xUnit.net 00:00:01.13]         /_/src/Moq/MethodCall.cs(380,0): at Moq.MethodCall.SetReturnComputedValueBehavior(Delegate valueFactory)
+[xUnit.net 00:00:01.13]         /_/src/Moq/Language/Flow/NonVoidSetupPhrase.cs(301,0): at Moq.Language.Flow.NonVoidSetupPhrase`2.Returns[T1](Func`2 valueExpression)
+[xUnit.net 00:00:01.13]            at Moq.GeneratedReturnsExtensions.ReturnsAsync[T,TMock,TResult](IReturns`2 mock, Func`2 valueFunction)
+[xUnit.net 00:00:01.13]         /home/ewaldt/Documents/VS/Other/Mathilda/tests/Mathilda/Services/InstallPromptServiceTests.cs(24,0): at Mathilda.Tests.Services.InstallPromptServiceTests..ctor()
+[xUnit.net 00:00:01.13]            at System.RuntimeType.CreateInstanceDefaultCtor(Boolean publicOnly, Boolean wrapExceptions)
+[xUnit.net 00:00:03.26]       Bunit.Extensions.WaitForHelpers.WaitForFailedException : The CSS selector did not result in any matching element(s) before the timeout period passed. Check count: 2. Component render count: 2. Total render count: 2.
+[xUnit.net 00:00:03.26]       Stack Trace:
+[xUnit.net 00:00:03.26]         /_/src/bunit.web/Extensions/WaitForHelpers/RenderedFragmentWaitForHelperExtensions.cs(188,0): at Bunit.RenderedFragmentWaitForHelperExtensions.WaitForElementsCore(IRenderedFragment renderedFragment, String cssSelector, Nullable`1 matchElementCount, Nullable`1 timeout)
+[xUnit.net 00:00:03.26]         /_/src/bunit.web/Extensions/WaitForHelpers/RenderedFragmentWaitForHelperExtensions.cs(44,0): at Bunit.RenderedFragmentWaitForHelperExtensions.WaitForElements(IRenderedFragment renderedFragment, String cssSelector)
+[xUnit.net 00:00:03.26]         /home/ewaldt/Documents/VS/Other/Mathilda/tests/Mathilda/Components/InstallWizardModalTests.cs(65,0): at Mathilda.Tests.Components.InstallWizardModalTests.Render_WhenIOSPlatform_ShowsIOSGuide()
+[xUnit.net 00:00:03.26]         --- End of stack trace from previous location ---
+[xUnit.net 00:00:03.29]   Finished:    Mathilda.Tests
+</StdOut>
+    </Output>
+    <RunInfos>
+      <RunInfo computerName="ewaldt-N95" outcome="Error" timestamp="2026-08-18T03:46:12.1077270+07:00">
+        <Text>[xUnit.net 00:00:00.88]     Mathilda.Tests.Services.InstallPromptServiceTests.InitializeAsync_LoadsSettingsAndPlatformInfo [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="ewaldt-N95" outcome="Error" timestamp="2026-08-18T03:46:12.1214823+07:00">
+        <Text>[xUnit.net 00:00:00.89]     Mathilda.Tests.Services.InstallPromptServiceTests.DismissInstallPromptAsync_PersistsPreference [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="ewaldt-N95" outcome="Error" timestamp="2026-08-18T03:46:12.5539956+07:00">
+        <Text>[xUnit.net 00:00:01.11]     Mathilda.Tests.Services.InstallPromptServiceTests.OnAppInstalled_UpdatesState [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="ewaldt-N95" outcome="Error" timestamp="2026-08-18T03:46:12.5541588+07:00">
+        <Text>[xUnit.net 00:00:01.13]     Mathilda.Tests.Services.InstallPromptServiceTests.InitializeAsync_WhenStandalone_DoesNotShowPrompt [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="ewaldt-N95" outcome="Error" timestamp="2026-08-18T03:46:12.5542590+07:00">
+        <Text>[xUnit.net 00:00:01.13]     Mathilda.Tests.Services.InstallPromptServiceTests.ResetDismissalAsync_ClearsPreference [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="ewaldt-N95" outcome="Error" timestamp="2026-08-18T03:46:14.4894497+07:00">
+        <Text>[xUnit.net 00:00:03.26]     Mathilda.Tests.Components.InstallWizardModalTests.Render_WhenIOSPlatform_ShowsIOSGuide [FAIL]</Text>
+      </RunInfo>
+    </RunInfos>
+  </ResultSummary>
+</TestRun>

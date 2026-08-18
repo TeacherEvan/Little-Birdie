@@ -1,5 +1,7 @@
 // Mathilda Service Worker - Cache-first strategy for offline PWA
-const CACHE_NAME = 'mathilda-cache-v0.2.0';
+// Cache version lives in ONE place. Bump this to invalidate old caches on next load.
+const CACHE_VERSION = 'v0.2.0';
+const CACHE_NAME = 'mathilda-cache-' + CACHE_VERSION;
 const STATIC_ASSETS = [
   '/',
   '/index.html',
