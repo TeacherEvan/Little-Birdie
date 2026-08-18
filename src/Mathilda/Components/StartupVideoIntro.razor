@@ -1,0 +1,57 @@
+@using Mathilda.Services
+@using Mathilda.Models
+@inject AppSettingsService Settings
+
+@if (!_completed)
+{
+    <div class="startup-intro" role="region" aria-label="Startup introduction">
+        <img class="startup-fallback" src="media/startup-intro.svg" alt="Mathilda" />
+
+        <button class="btn btn-ghost skip-btn" @onclick="MarkComplete" aria-label="Skip intro">Skip Intro ✕</button>
+
+        @if (_loading)
+        {
+            <div class="loading-spinner" aria-live="polite">Loading…</div>
+        }
+    </div>
+}
+
+@code {
+    [Parameter]
+    public EventCallback OnComplete { get; set; }
+
+    private bool _completed;
+    private bool _loading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        AppSettings settings;
+        try
+        {
+            settings = await Settings.LoadAsync();
+        }
+        catch
+        {
+            settings = new AppSettings();
+        }
+
+        _loading = false;
+
+        if (settings.SkipStartupVideo)
+        {
+            await MarkComplete();
+            return;
+        }
+
+        // Auto-advance safety net in case the splash is dismissed some other way.
+        _ = Task.Delay(8000).ContinueWith(_ => InvokeAsync(MarkComplete));
+    }
+
+    private async Task MarkComplete()
+    {
+        if (_completed) return;
+        _completed = true;
+        await OnComplete.InvokeAsync();
+        StateHasChanged();
+    }
+}

@@ -1,0 +1,13 @@
+{
+  "name": "mathilda-convex",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Convex backend for Mathilda — live places, weather, and settings sync.",
+  "scripts": {
+    "dev": "convex dev",
+    "deploy": "convex deploy"
+  },
+  "dependencies": {
+    "convex": "^1.17.0"
+  }
+}

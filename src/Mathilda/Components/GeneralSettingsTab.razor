@@ -1,0 +1,21 @@
+@using Mathilda.Models
+
+<div class="settings-panel">
+    <section class="settings-section">
+        <h3>Startup</h3>
+        <label class="checkbox-row">
+            <input type="checkbox" @bind="Model.SkipStartupVideo" />
+            <span>Skip startup intro video</span>
+        </label>
+        <label class="checkbox-row">
+            <input type="checkbox" @bind="Model.ShowInstallPrompt" />
+            <span>Show PWA install prompt</span>
+        </label>
+    </section>
+</div>
+
+@code {
+    /// <summary>Shared settings instance owned by the parent SettingsPage (two-way bound).</summary>
+    [Parameter]
+    public AppSettings Model { get; set; } = new();
+}

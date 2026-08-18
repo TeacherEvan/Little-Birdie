@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0f172a"/>
+      <stop offset="100%" style="stop-color:#0369a1"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#f59e0b"/>
+      <stop offset="100%" style="stop-color:#d97706"/>
+    </linearGradient>
+  </defs>
+  <!-- Background rounded square -->
+  <rect x="16" y="16" width="480" height="480" rx="96" fill="url(#bg)"/>
+  <!-- Thai temple silhouette (stylized) -->
+  <g fill="url(#gold)">
+    <!-- Central prang -->
+    <path d="M256 80 L210 200 L230 200 L230 320 L282 320 L282 200 L302 200 Z"/>
+    <!-- Side chedis -->
+    <path d="M140 200 L110 280 L130 280 L130 360 L150 360 L150 280 L170 280 Z"/>
+    <path d="M372 200 L342 280 L362 280 L362 360 L382 360 L382 280 L402 280 Z"/>
+    <!-- Decorative elements -->
+    <circle cx="256" cy="120" r="12" fill="#fbbf24"/>
+    <circle cx="130" cy="220" r="6" fill="#fbbf24"/>
+    <circle cx="382" cy="220" r="6" fill="#fbbf24"/>
+    <!-- Sun rays behind -->
+    <g opacity="0.3" stroke="url(#gold)" stroke-width="3" fill="none">
+      <line x1="256" y1="80" x2="256" y2="20"/>
+      <line x1="256" y1="80" x2="270" y2="30"/>
+      <line x1="256" y1="80" x2="242" y2="30"/>
+      <line x1="256" y1="80" x2="280" y2="45"/>
+      <line x1="256" y1="80" x2="232" y2="45"/>
+    </g>
+  </g>
+  <!-- "M" monogram at bottom -->
+  <text x="256" y="420" text-anchor="middle" font-family="system-ui, sans-serif" font-size="80" font-weight="800" fill="url(#gold)">M</text>
+</svg>

@@ -25,4 +25,7 @@ public sealed class PlacesService
         var rows = await _convex.QueryAsync<List<Attraction>>("places/list");
         return rows ?? new List<Attraction>();
     }
+
+    /// <summary>Returns true if a Convex client is registered and available.</summary>
+    public bool IsConvexConnected() => _convex != null;
 }

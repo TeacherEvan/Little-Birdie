@@ -5,9 +5,10 @@
 <p>Loading your travel companion...</p>
 
 @code {
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
-        await Task.Delay(1200);
+        // The startup intro, privacy consent, and location prompt are handled by MainLayout.
+        // Hand straight off to the dashboard.
         Nav.NavigateTo("/");
     }
 }

@@ -1,33 +1,53 @@
 @page "/settings"
-@using Microsoft.AspNetCore.Components.Forms
+@using Mathilda.Services
+@using Mathilda.Models
+@inject AppSettingsService Settings
 
 <h2>Settings</h2>
 
-<EditForm Model="@this" OnValidSubmit="Save">
-    <label>Language
-        <select @bind="Language">
-            <option value="en">English</option>
-            <option value="th">Thai</option>
-        </select>
-    </label>
-    <label>Theme
-        <select @bind="Theme">
-            <option value="light">Light</option>
-            <option value="dark">Dark</option>
-        </select>
-    </label>
-    <button type="submit" class="btn">Save</button>
-</EditForm>
+<div class="tabs" role="tablist">
+    <button class="tab @(_active == 0 ? "tab-active" : "")" role="tab" @onclick="@(() => _active = 0)">General</button>
+    <button class="tab @(_active == 1 ? "tab-active" : "")" role="tab" @onclick="@(() => _active = 1)">Privacy</button>
+    <button class="tab @(_active == 2 ? "tab-active" : "")" role="tab" @onclick="@(() => _active = 2)">Advanced</button>
+</div>
 
-<p>@status</p>
+<div class="tab-panel">
+    @if (_active == 0)
+    {
+        <GeneralSettingsTab Model="Model" />
+    }
+    else if (_active == 1)
+    {
+        <PrivacySettingsTab />
+    }
+    else if (_active == 2)
+    {
+        <AdvancedSettingsPanel Model="Model" />
+    }
+</div>
+
+@if (_active != 1)
+{
+    <div class="modal-actions">
+        <button class="btn btn-primary" @onclick="SaveAsync">Save Settings</button>
+        <span class="save-status @(_saved ? "ok" : "")">@(_saved ? "Saved ✓" : "")</span>
+    </div>
+}
 
 @code {
-    public string Language { get; set; } = "en";
-    public string Theme { get; set; } = "light";
-    private string status = "";
+    private int _active = 0;
+    private AppSettings Model { get; set; } = new();
+    private bool _saved;
 
-    private void Save()
+    protected override async Task OnInitializedAsync()
     {
-        status = $"Saved: lang={Language}, theme={Theme}";
+        Model = await Settings.LoadAsync();
+    }
+
+    private async Task SaveAsync()
+    {
+        await Settings.SaveAsync(Model);
+        _saved = true;
+        StateHasChanged();
     }
 }

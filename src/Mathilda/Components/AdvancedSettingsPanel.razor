@@ -1,0 +1,89 @@
+@using Mathilda.Models
+@using Mathilda.Services
+@inject IJSRuntime JS
+
+<div class="settings-panel">
+    <section class="settings-section">
+        <h3>Power User &amp; Developer</h3>
+        <div class="field">
+            <label for="convexUrl">Custom Convex URL</label>
+            <input id="convexUrl" type="text" placeholder="https://your-deployment.convex.cloud"
+                   @bind="Model.CustomConvexUrl" />
+            <button class="btn btn-secondary" @onclick="PingConvexAsync">Ping</button>
+            <span class="ping-status @(_pingOk == true ? "ok" : _pingOk == false ? "err" : "")">
+                @_pingMessage
+            </span>
+        </div>
+        <div class="field">
+            <button class="btn btn-secondary" @onclick="ForceReloadSwAsync">Force Service Worker Reload</button>
+            <span class="sw-status @(_swOk == true ? "ok" : _swOk == false ? "err" : "")">
+                @_swMessage
+            </span>
+        </div>
+    </section>
+</div>
+
+@code {
+    /// <summary>Shared settings instance owned by the parent SettingsPage (two-way bound).</summary>
+    [Parameter]
+    public AppSettings Model { get; set; } = new();
+
+    private bool? _pingOk;
+    private string _pingMessage = "";
+    private bool? _swOk;
+    private string _swMessage = "";
+
+    private async Task PingConvexAsync()
+    {
+        _pingOk = null;
+        _pingMessage = "Pinging…";
+        try
+        {
+            var url = Model.CustomConvexUrl?.Trim();
+            if (string.IsNullOrEmpty(url))
+            {
+                _pingOk = false;
+                _pingMessage = "No URL set";
+                return;
+            }
+            using var client = new HttpClient { BaseAddress = new Uri(url) };
+            var resp = await client.GetAsync("/version");
+            _pingOk = resp.IsSuccessStatusCode;
+            _pingMessage = resp.IsSuccessStatusCode ? "🟢 Reachable" : $"🔴 {resp.StatusCode}";
+        }
+        catch (Exception ex)
+        {
+            _pingOk = false;
+            _pingMessage = $"🔴 {ex.Message}";
+        }
+        StateHasChanged();
+    }
+
+    private async Task ForceReloadSwAsync()
+    {
+        _swOk = null;
+        _swMessage = "Updating…";
+        try
+        {
+            var result = await JS.InvokeAsync<JsonElement>("mathilda.sw.update");
+            if (result.TryGetProperty("success", out var ok) && ok.GetBoolean())
+            {
+                _swOk = true;
+                _swMessage = "✓ Service worker update triggered";
+            }
+            else
+            {
+                _swOk = false;
+                _swMessage = result.TryGetProperty("reason", out var r)
+                    ? $"Failed: {r.GetString()}"
+                    : "Failed";
+            }
+        }
+        catch (Exception ex)
+        {
+            _swOk = false;
+            _swMessage = $"Failed: {ex.Message}";
+        }
+        StateHasChanged();
+    }
+}

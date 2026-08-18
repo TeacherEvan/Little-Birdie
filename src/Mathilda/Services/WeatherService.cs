@@ -19,4 +19,7 @@ public sealed class WeatherService
         var snap = await _convex.QueryAsync<WeatherSnapshot>("weather/get", new { lat, lng });
         return snap ?? new WeatherSnapshot(0, "", Array.Empty<string>());
     }
+
+    /// <summary>Returns true if a Convex client is registered and available.</summary>
+    public bool IsConvexConnected() => _convex != null;
 }

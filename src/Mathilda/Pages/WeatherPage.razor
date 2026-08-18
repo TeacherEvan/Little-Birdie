@@ -2,9 +2,10 @@
 @using Microsoft.AspNetCore.Components
 @using Mathilda.Services
 @inject WeatherService Weather
+@inject LocationService Location
 
 <h1>Weather</h1>
-<p>Current conditions for Bangkok (13.75, 100.5) — mock data until Convex is configured.</p>
+<p>Current conditions for @_locationName (@_lat.ToString("0.00"), @_lng.ToString("0.00")) — @(_convexConnected ? "live data" : "mock data")</p>
 
 @if (_snapshot is null)
 {
@@ -35,9 +36,21 @@ else
 
 @code {
     private Mathilda.Models.WeatherSnapshot? _snapshot;
+    private double _lat = 13.75;
+    private double _lng = 100.5;
+    private string _locationName = "Bangkok";
+    private bool _convexConnected;
 
     protected override async Task OnInitializedAsync()
     {
-        _snapshot = await Weather.Fetch(13.75, 100.5);
+        var loc = await Location.LoadAsync();
+        if (loc is { } l)
+        {
+            _lat = l.Lat;
+            _lng = l.Lng;
+            _locationName = l.Name;
+        }
+        _convexConnected = Weather.IsConvexConnected();
+        _snapshot = await Weather.Fetch(_lat, _lng);
     }
 }

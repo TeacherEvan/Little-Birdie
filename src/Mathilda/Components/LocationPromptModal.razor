@@ -1,0 +1,81 @@
+@using Mathilda.Services
+@using Mathilda.Models
+@inject LocationService Location
+
+@if (Visible)
+{
+    <div class="modal-overlay location-overlay" role="dialog" aria-modal="true" aria-labelledby="loc-title">
+        <div class="modal-card location-card">
+            <h2 id="loc-title">Help Mathilda Find You</h2>
+            <p class="location-copy">
+                Mathilda works best when it knows your location — we can surface nearby attractions,
+                weather, and travel times across Thailand. Your position is used only on this device.
+            </p>
+
+            <div class="modal-actions">
+                <button class="btn btn-primary" @onclick="RequestGpsAsync">Use My Location</button>
+                <button class="btn btn-ghost" @onclick="ShowFallback">Choose a City Instead</button>
+            </div>
+
+            @if (_showFallback)
+            {
+                <fieldset class="province-list">
+                    <legend class="sr-only">Popular Thai destinations</legend>
+                    <label class="select-row">
+                        <span>Destination</span>
+                        <select @bind="_selectedProvince">
+                            @foreach (var p in ThaiProvince.All)
+                            {
+                                <option value="@p.Name">@p.Name</option>
+                            }
+                        </select>
+                    </label>
+                    <button class="btn btn-secondary" @onclick="ConfirmFallback">Use This City</button>
+                </fieldset>
+            }
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public EventCallback<(double Lat, double Lng, string Name)> OnLocationChosen { get; set; }
+    [Parameter]
+    public EventCallback OnDismissed { get; set; }
+
+    private bool Visible = true;
+    private bool _showFallback;
+    private string _selectedProvince = ThaiProvince.All[0].Name;
+
+    public void Show() => Visible = true;
+
+    private async Task RequestGpsAsync()
+    {
+        var coords = await Location.RequestGpsAsync();
+        if (coords is { } c)
+        {
+            await Location.SaveAsync(c.Lat, c.Lng, "GPS");
+            Visible = false;
+            await OnLocationChosen.InvokeAsync((c.Lat, c.Lng, "GPS"));
+            return;
+        }
+        // GPS unavailable/denied — fall through to manual selection
+        _showFallback = true;
+        StateHasChanged();
+    }
+
+    private void ShowFallback()
+    {
+        _showFallback = true;
+        StateHasChanged();
+    }
+
+    private async Task ConfirmFallback()
+    {
+        var province = ThaiProvince.All.FirstOrDefault(p => p.Name == _selectedProvince)
+                       ?? ThaiProvince.All[0];
+        await Location.SaveAsync(province.Latitude, province.Longitude, province.Name);
+        Visible = false;
+        await OnLocationChosen.InvokeAsync((province.Latitude, province.Longitude, province.Name));
+    }
+}

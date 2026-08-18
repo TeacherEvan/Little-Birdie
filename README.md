@@ -16,4 +16,23 @@ dotnet run --project src/Mathilda/Mathilda.csproj
 - Convex: `npx convex dev` (needs `CONVEX_DEPLOY_KEY`). Set `CONVEX_DEPLOYMENT` as a Vercel env var.
 
 ## Status
-Scaffold + domain models + Convex schema in place. UI components and deploy wiring pending.
+
+**v0.2.0 released** (tagged). 
+
+Implemented:
+- Blazor WASM front-end with **modernized octagon dashboard** (status bar, animated SVG tiles, quick currency/weather chips, install banner) + 8 feature pages (Attractions, Weather, Cost, Banking, Bathroom, Bolt, Counter, Location) + Settings/Splash.
+- Convex data layer (HTTP API): `ConvexClient`, `PlacesService`, `WeatherService` with mock fallback; **real user location via `LocationService`**.
+- PWA: `manifest.json`, `service-worker.js`, `InstallPromptService` + `InstallWizardModal` (adaptive desktop/iOS).
+- Startup intro (`StartupVideoIntro`, **SVG splash + real video assets** `media/startup-intro.webm` & `.mp4`).
+- Privacy: `PrivacyConsentService` + `PrivacyConsentModal`; location explainer + Thai-province fallback (`LocationPromptModal`).
+- Advanced settings hub (`AppSettingsService`, `SettingsPage` General/Privacy/Advanced tabs, `AdvancedSettingsPanel`), Convex `settings` schema extended.
+
+**Tests:** `dotnet test` → **42 passed** (models, services, components, interop contracts).
+**Build:** `dotnet publish -c Release` → Vercel-ready `publish/wwwroot`.
+
+## Plans & Docs
+
+- [docs/plans/2026-08-14-csharp-rebuild.md](docs/plans/2026-08-14-csharp-rebuild.md) — C# rebuild plan (G1–G5 resolved, v0.1.0).
+- [docs/plans/archive/2026-08-17-pwa-install-startup-onboarding-advanced-settings.md](docs/plans/archive/2026-08-17-pwa-install-startup-onboarding-advanced-settings.md) — archived: PWA/startup/privacy/advanced-settings plan (resolution note at §0).
+- [docs/plans/2026-08-18-settings-privacy-refactor-PLAN.md](docs/plans/2026-08-18-settings-privacy-refactor-PLAN.md) — settings/privacy refactor audit & remediation (complete).
+- [convex/README.md](convex/README.md) — Convex schema + HTTP API wiring.

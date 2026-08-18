@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Mathilda startup animation">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#0284c7"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="450" fill="url(#sky)"/>
+  <circle cx="400" cy="225" r="70" fill="#f59e0b">
+    <animate attributeName="cy" values="320;180;320" dur="4s" repeatCount="indefinite"/>
+    <animate attributeName="r" values="60;78;60" dur="4s" repeatCount="indefinite"/>
+  </circle>
+  <g opacity="0.8" fill="#0284c7">
+    <path d="M0 360 Q200 320 400 360 T800 360 V450 H0 Z">
+      <animateTransform attributeName="transform" type="translate" values="-40 0;40 0;-40 0" dur="6s" repeatCount="indefinite"/>
+    </path>
+  </g>
+  <text x="400" y="410" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="34" font-weight="700" fill="#ffffff">Mathilda</text>
+</svg>

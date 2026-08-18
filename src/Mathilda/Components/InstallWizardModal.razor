@@ -1,0 +1,209 @@
+@using Mathilda.Services
+@using Mathilda.Models
+@inject InstallPromptService InstallPrompt
+@inject IJSRuntime JS
+
+@if (ShowModal)
+{
+    <div class="modal-overlay" @onclick="CloseModal">
+        <div class="modal install-wizard-modal" @onclick:stopPropagation="true">
+            <button class="modal-close" @onclick="CloseModal" aria-label="Close install wizard">&times;</button>
+            
+            <div class="modal-header">
+                <h2>📲 Install Mathilda on your Device</h2>
+                <p class="subtitle">Get the native app experience! Fast, works offline, and opens directly from your home screen or dock.</p>
+            </div>
+
+            <div class="modal-body">
+                @if (InstallPrompt.PlatformInfo.Platform == "iOS")
+                {
+                    <div class="ios-install-guide">
+                        <h3>iOS Safari - Add to Home Screen</h3>
+                        <p>Mathilda isn't available in the App Store, but you can install it directly from Safari:</p>
+                        
+                        <div class="step">
+                            <span class="step-number">1</span>
+                            <div class="step-content">
+                                <strong>Tap the Share button</strong> <span class="icon">⎋</span> in your Safari toolbar
+                            </div>
+                        </div>
+                        <div class="step">
+                            <span class="step-number">2</span>
+                            <div class="step-content">
+                                <strong>Scroll down and tap</strong> "Add to Home Screen" <span class="icon">➕</span>
+                            </div>
+                        </div>
+                        <div class="step">
+                            <span class="step-number">3</span>
+                            <div class="step-content">
+                                <strong>Tap "Add"</strong> in the top right corner
+                            </div>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="android-desktop-install">
+                        @if (InstallPrompt.CanShowInstallPrompt)
+                        {
+                            <p>Install Mathilda with one click:</p>
+                            <button class="btn btn-primary install-btn" @onclick="InstallAsync" disabled="@_installing">
+                                @if (_installing)
+                                {
+                                    <span class="spinner"></span><text> Installing...</text>
+                                }
+                                else
+                                {
+                                    <span>⚡</span><text> 1-Click Install Mathilda</text>
+                                }
+                            </button>
+                            @if (_installResult != null)
+                            {
+                                <p class="result-message @(_installResult.Value ? "success" : "error")">
+                                    @(_installResult.Value ? "✅ Mathilda installed successfully!" : "❌ Installation cancelled or failed. You can try again later.")
+                                </p>
+                            }
+                        }
+                        else if (InstallPrompt.IsStandalone)
+                        {
+                            <p class="already-installed">✅ Mathilda is already installed and running as a native app!</p>
+                        }
+                        else
+                        {
+                            <p class="not-available">Install prompt not available. You can install Mathilda from your browser's menu:</p>
+                            <ul class="manual-install-hint">
+                                <li><strong>Chrome/Edge:</strong> Menu (⋮) → Install Mathilda / "Save and Share" → Install page as app</li>
+                                <li><strong>Firefox:</strong> Menu (☰) → More Tools → Install</li>
+                                <li><strong>Safari (macOS):</strong> File → Add to Dock</li>
+                            </ul>
+                        }
+                    </div>
+                }
+
+                <div class="modal-footer">
+                    <label class="checkbox-label">
+                        <input type="checkbox" @bind="DontShowAgain" @bind:event="onchange" />
+                        <span>Don't show this again</span>
+                    </label>
+                    <button class="btn btn-secondary" @onclick="RemindLater">Remind Me Later</button>
+                    <button class="btn btn-ghost" @onclick="Dismiss">Not Now</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private bool ShowModal = false;
+    private bool DontShowAgain = false;
+    private bool _installing = false;
+    private bool? _installResult = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        InstallPrompt.OnInstallPromptAvailable += OnPromptAvailable;
+        InstallPrompt.OnPlatformInfoChanged += OnPlatformChanged;
+        InstallPrompt.OnInstallCompleted += OnInstallCompleted;
+        
+        // Check if we should show the modal
+        await CheckShowModalAsync();
+    }
+
+    private async Task CheckShowModalAsync()
+    {
+        // Wait for initialization
+        await Task.Delay(100);
+        
+        // Check if user previously dismissed
+        var settings = await InstallPrompt.GetSettingsAsync();
+        if (settings.ShowInstallPrompt == false)
+        {
+            return; // User chose "Don't show again"
+        }
+
+        // Show if install prompt is available (Chromium/Android) or if this is iOS Safari,
+        // where beforeinstallprompt is unavailable but the Add-to-Home-Screen guide must still display.
+        if (InstallPrompt.CanShowInstallPrompt ||
+            (InstallPrompt.PlatformInfo.Platform == "iOS" && !InstallPrompt.IsStandalone))
+        {
+            ShowModal = true;
+            StateHasChanged();
+        }
+    }
+
+    private void OnPromptAvailable()
+    {
+        if (!InstallPrompt.IsStandalone && !DontShowAgain &&
+            (InstallPrompt.CanShowInstallPrompt || InstallPrompt.PlatformInfo.Platform == "iOS"))
+        {
+            ShowModal = true;
+            StateHasChanged();
+        }
+    }
+
+    private void OnPlatformChanged(PlatformInfo info)
+    {
+        StateHasChanged();
+    }
+
+    private void OnInstallCompleted(bool success)
+    {
+        _installing = false;
+        _installResult = success;
+        StateHasChanged();
+        
+        if (success)
+        {
+            ShowModal = false;
+        }
+    }
+
+    private async Task InstallAsync()
+    {
+        _installing = true;
+        _installResult = null;
+        StateHasChanged();
+
+        var success = await InstallPrompt.PromptInstallAsync();
+        
+        _installing = false;
+        _installResult = success;
+        StateHasChanged();
+    }
+
+    private void CloseModal()
+    {
+        ShowModal = false;
+        StateHasChanged();
+    }
+
+    private async Task RemindLater()
+    {
+        // Just close for now, will show again on next visit
+        ShowModal = false;
+        StateHasChanged();
+    }
+
+    private async Task Dismiss()
+    {
+        // "Don't show again" is honored only when the checkbox is checked.
+        await HandleDismissal();
+    }
+
+    private async Task HandleDismissal()
+    {
+        if (DontShowAgain)
+        {
+            await InstallPrompt.DismissInstallPromptAsync();
+        }
+        ShowModal = false;
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        InstallPrompt.OnInstallPromptAvailable -= OnPromptAvailable;
+        InstallPrompt.OnPlatformInfoChanged -= OnPlatformChanged;
+        InstallPrompt.OnInstallCompleted -= OnInstallCompleted;
+    }
+}

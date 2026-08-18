@@ -1,0 +1,120 @@
+@using Mathilda.Services
+@using Mathilda.Models
+@inject PrivacyConsentService Consent
+
+@if (Visible)
+{
+    <div class="modal-overlay consent-overlay" role="dialog" aria-modal="true" aria-labelledby="consent-title">
+        <div class="modal-card consent-banner">
+            <h2 id="consent-title">Your Privacy, Your Choice</h2>
+            <p class="consent-copy">
+                Mathilda stores a little travel data on your device to work offline and give you
+                better recommendations around Thailand. Choose how we may use your data — you can
+                change this anytime in Settings.
+            </p>
+
+            @if (_customize)
+            {
+                <fieldset class="consent-options">
+                    <label class="checkbox-row">
+                        <input type="checkbox" checked disabled />
+                        <span><strong>Essential</strong> — offline cache &amp; saved settings (required)</span>
+                    </label>
+                    <label class="checkbox-row">
+                        <input type="checkbox" @bind="_preferences" />
+                        <span><strong>Preferences</strong> — currency, language, recent places</span>
+                    </label>
+                    <label class="checkbox-row">
+                        <input type="checkbox" @bind="_analytics" />
+                        <span><strong>Analytics</strong> — anonymous diagnostics to improve Mathilda</span>
+                    </label>
+                </fieldset>
+            }
+
+            <div class="modal-actions">
+                @if (_customize)
+                {
+                    <button class="btn btn-primary" @onclick="SaveCustom">Save Choices</button>
+                    <button class="btn btn-ghost" @onclick="CancelCustomize">Back</button>
+                }
+                else
+                {
+                    <button class="btn btn-primary" @onclick="AcceptAll">Accept All</button>
+                    <button class="btn btn-ghost" @onclick="EssentialOnly">Essential Only</button>
+                    <button class="btn btn-secondary" @onclick="ShowCustomize">Customize</button>
+                }
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public EventCallback<PrivacyConsent> OnConsent { get; set; }
+
+    private bool Visible = true;
+    private bool _customize;
+    private bool _preferences;
+    private bool _analytics;
+
+    /// <summary>Loads any prior consent; if already chosen, skip the banner.</summary>
+    public async Task InitializeAsync()
+    {
+        var existing = await Consent.LoadAsync();
+        if (existing.EssentialAccepted || existing.PreferencesAccepted || existing.AnalyticsAccepted)
+        {
+            Visible = false;
+        }
+        StateHasChanged();
+    }
+
+    private void ShowCustomize()
+    {
+        _customize = true;
+        _preferences = false;
+        _analytics = false;
+        StateHasChanged();
+    }
+
+    private void CancelCustomize()
+    {
+        _customize = false;
+        StateHasChanged();
+    }
+
+    private async Task AcceptAll()
+    {
+        var consent = new PrivacyConsent(
+            EssentialAccepted: true,
+            PreferencesAccepted: true,
+            AnalyticsAccepted: true,
+            ConsentTimestamp: DateTimeOffset.UtcNow);
+        await Consent.SaveAsync(consent);
+        await CompleteAsync(consent);
+    }
+
+    private async Task EssentialOnly()
+    {
+        var consent = PrivacyConsent.Default();
+        await Consent.SaveAsync(consent);
+        await CompleteAsync(consent);
+    }
+
+    private async Task SaveCustom()
+    {
+        var consent = new PrivacyConsent(
+            EssentialAccepted: true,
+            PreferencesAccepted: _preferences,
+            AnalyticsAccepted: _analytics,
+            ConsentTimestamp: DateTimeOffset.UtcNow);
+        await Consent.SaveAsync(consent);
+        await CompleteAsync(consent);
+    }
+
+    private async Task CompleteAsync(PrivacyConsent consent)
+    {
+        Visible = false;
+        await OnConsent.InvokeAsync(consent);
+        StateHasChanged();
+    }
+}
